@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Join Spice Haven - Premium Registration</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="icon" type="image/png" href="../images/favicon.png" />
+
+  <link rel="stylesheet" href="./css/register.css" />
+
+</head>
+
+<body>
+  <!-- Left Panel -->
+  <div class="left-panel">
+    <div class="spice-particles" id="particles"></div>
+    <div class="left-content">
+      <div class="brand-logo">SPICE HAVEN</div>
+      <p class="tagline">Elevate Your Culinary Journey</p>
+    </div>
+  </div>
+
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <div class="form-container">
+      <div class="form-header">
+        <h2>Welcome</h2>
+        <p>Create your account to explore exotic flavors</p>
+      </div>
+
+      <form id="registerForm">
+        <div class="input-wrapper">
+          <input type="text" id="name" placeholder=" " required autocomplete="name">
+          <label for="name">Full Name</label>
+          <i class="fa fa-user input-icon"></i>
+        </div>
+
+        <div class="input-wrapper">
+          <input type="email" id="email" placeholder=" " required autocomplete="email">
+          <label for="email">Email Address</label>
+          <i class="fa fa-envelope input-icon"></i>
+        </div>
+
+        <div class="input-wrapper">
+          <input type="password" id="password" placeholder=" " required autocomplete="new-password">
+          <label for="password">Password</label>
+          <i class="fa fa-eye input-icon" id="togglePassword"></i>
+          <div class="strength-meter">
+            <div class="strength-bar" id="strengthBar"></div>
+          </div>
+        </div>
+
+        <button type="submit" class="register-btn">
+          <span>Create Account</span>
+        </button>
+      </form>
+
+      <div class="divider"><span>OR</span></div>
+
+      <p class="login-link">
+        Already have an account? <a href="login.html">Sign in here</a>
+      </p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+  <script src="./js/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spice Haven - Customers</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .sidebar { transition: all 0.3s; }
+    a.no-underline { text-decoration: none; }
+    .nav-link.active { background-color: rgba(255, 255, 255, 0.2); color: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+    .customer-card { transition: all 0.3s; }
+    .customer-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+    .modal { display: none; }
+    .modal.active { display: flex; }
+    tr:hover { background-color: rgba(251, 191, 36, 0.05); }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 min-h-screen">
+  
+  <div class="flex">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar w-64 bg-gradient-to-b from-amber-900 to-orange-900 min-h-screen p-4 shadow-2xl fixed left-0 top-0 bottom-0 z-50 text-white">
+      <!-- Logo -->
+      <div class="flex items-center justify-between mb-8">
+       <div class="flex items-center gap-2">
+          <img src="img/logo.jpeg" alt="Spice Haven Logo" class="h-8 w-8">
+          <h2 class="text-xl font-bold">Spice Haven</h2>
+        </div>
+      </div>
+      
+      <!-- Navigation -->
+      <nav class="space-y-2">
+        <a href="dashboard.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-th-large w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        
+        <a href="products.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-box w-5 h-5"></i>
+          <span>Products</span>
+        </a>
+        
+        <a href="flash-sales.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-bolt w-5 h-5"></i>
+          <span>Flash Sales</span>
+        </a>
+        
+        <a href="customers.html" class="nav-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-users w-5 h-5"></i>
+          <span>Customers</span>
+        </a>
+        
+        <a href="orders.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-shopping-cart w-5 h-5"></i>
+          <span>Orders</span>
+        </a>
+        
+        <a href="messages.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-envelope w-5 h-5"></i>
+          <span>Messages</span>
+          <span id="message-badge" class="ml-auto bg-red-600 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
+        </a>
+        
+        <a href="report.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-chart-pie w-5 h-5"></i>
+          <span>Report</span>
+        </a>
+        
+        <a href="settings.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-cog w-5 h-5"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <!-- User Profile Section at Bottom -->
+      <div class="absolute bottom-6 left-4 right-4">
+        <div class="bg-amber-800 bg-opacity-50 rounded-xl p-4 backdrop-blur-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+              A
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-white">Admin User</p>
+              <p class="text-xs text-amber-200">Online</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 ml-64">
+      <!-- Header -->
+      <header class="bg-white shadow-md border-b border-amber-200 sticky top-0 z-40">
+        <div class="px-8 py-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-2xl font-bold text-amber-900">Customer Management</h1>
+              <p class="text-sm text-amber-700">View and manage your customers</p>
+            </div>
+            <div class="flex items-center gap-6">
+              <button class="relative">
+                <i class="fas fa-bell text-gray-600 text-xl"></i>
+                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+              </button>
+              <!-- User profile section -->
+              <div class="flex items-center gap-2 cursor-pointer hover:bg-amber-50 px-3 py-2 rounded-lg transition-colors">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=f59e0b&color=fff" class="w-9 h-9 rounded-full shadow-md" alt="User">
+                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="p-8">
+        
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Total Customers</p>
+                <p class="text-3xl font-bold text-amber-900">1,847</p>
+              </div>
+              <div class="bg-gradient-to-br from-amber-400 to-orange-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-users text-white text-2xl"></i>
+              </div>
+            </div>
+            <p class="text-xs text-green-600 mt-2 flex items-center gap-1">
+              <i class="fas fa-arrow-up"></i> +125 this month
+            </p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Active Customers</p>
+                <p class="text-3xl font-bold text-amber-900">1,234</p>
+              </div>
+              <div class="bg-gradient-to-br from-green-400 to-emerald-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-user-check text-white text-2xl"></i>
+              </div>
+            </div>
+            <p class="text-xs text-green-600 mt-2 flex items-center gap-1">
+              <i class="fas fa-arrow-up"></i> 67% active rate
+            </p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">New This Week</p>
+                <p class="text-3xl font-bold text-amber-900">43</p>
+              </div>
+              <div class="bg-gradient-to-br from-blue-400 to-cyan-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-user-plus text-white text-2xl"></i>
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">Last 7 days</p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Avg Order Value</p>
+                <p class="text-3xl font-bold text-amber-900">$87</p>
+              </div>
+              <div class="bg-gradient-to-br from-purple-400 to-pink-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-dollar-sign text-white text-2xl"></i>
+              </div>
+            </div>
+            <p class="text-xs text-green-600 mt-2 flex items-center gap-1">
+              <i class="fas fa-arrow-up"></i> +$12 increase
+            </p>
+          </div>
+        </div>
+
+        <!-- Top Customers Section -->
+        <div class="mb-8">
+          <h3 class="text-xl font-bold text-amber-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-star text-yellow-500"></i>
+            Top Customers
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            
+            <!-- Top Customer Card 1 -->
+            <div class="customer-card bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+              <div class="flex flex-col items-center text-center">
+                <div class="relative mb-4">
+                  <img src="https://ui-avatars.com/api/?name=Sarah+Johnson&background=f59e0b&color=fff" class="w-20 h-20 rounded-full shadow-lg" alt="Sarah Johnson">
+                  <span class="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                    <i class="fas fa-crown"></i> VIP
+                  </span>
+                </div>
+                <h3 class="font-bold text-amber-900 text-lg mb-1">Sarah Johnson</h3>
+                <p class="text-sm text-gray-600 mb-3">sarah.j@example.com</p>
+                <div class="w-full space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Orders:</span>
+                    <span class="font-bold text-amber-900">31</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Total Spent:</span>
+                    <span class="font-bold text-green-600">$687.00</span>
+                  </div>
+                </div>
+                <button onclick="viewCustomer('Sarah Johnson')" class="w-full mt-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all">
+                  View Profile
+                </button>
+              </div>
+            </div>
+
+            <!-- Top Customer Card 2 -->
+            <div class="customer-card bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+              <div class="flex flex-col items-center text-center">
+                <div class="relative mb-4">
+                  <img src="https://ui-avatars.com/api/?name=Jane+Mitchell&background=ef4444&color=fff" class="w-20 h-20 rounded-full shadow-lg" alt="Jane Mitchell">
+                  <span class="absolute -top-1 -right-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                    <i class="fas fa-crown"></i> VIP
+                  </span>
+                </div>
+                <h3 class="font-bold text-amber-900 text-lg mb-1">Jane Mitchell</h3>
+                <p class="text-sm text-gray-600 mb-3">jane.m@example.com</p>
+                <div class="w-full space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Orders:</span>
+                    <span class="font-bold text-amber-900">23</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Total Spent:</span>
+                    <span class="font-bold text-green-600">$452.00</span>
+                  </div>
+                </div>
+                <button onclick="viewCustomer('Jane Mitchell')" class="w-full mt-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all">
+                  View Profile
+                </button>
+              </div>
+            </div>
+
+            <!-- Top Customer Card 3 -->
+            <div class="customer-card bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+              <div class="flex flex-col items-center text-center">
+                <div class="relative mb-4">
+                  <img src="https://ui-avatars.com/api/?name=Michael+Chen&background=3b82f6&color=fff" class="w-20 h-20 rounded-full shadow-lg" alt="Michael Chen">
+                  <span class="absolute -top-1 -right-1 bg-gradient-to-r from-blue-400 to-cyan-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                    PRO
+                  </span>
+                </div>
+                <h3 class="font-bold text-amber-900 text-lg mb-1">Michael Chen</h3>
+                <p class="text-sm text-gray-600 mb-3">m.chen@example.com</p>
+                <div class="w-full space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Orders:</span>
+                    <span class="font-bold text-amber-900">19</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Total Spent:</span>
+                    <span class="font-bold text-green-600">$389.00</span>
+                  </div>
+                </div>
+                <button onclick="viewCustomer('Michael Chen')" class="w-full mt-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all">
+                  View Profile
+                </button>
+              </div>
+            </div>
+
+            <!-- Top Customer Card 4 -->
+            <div class="customer-card bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+              <div class="flex flex-col items-center text-center">
+                <div class="relative mb-4">
+                  <img src="https://ui-avatars.com/api/?name=Emma+Davis&background=10b981&color=fff" class="w-20 h-20 rounded-full shadow-lg" alt="Emma Davis">
+                  <span class="absolute -top-1 -right-1 bg-gradient-to-r from-blue-400 to-cyan-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                    PRO
+                  </span>
+                </div>
+                <h3 class="font-bold text-amber-900 text-lg mb-1">Emma Davis</h3>
+                <p class="text-sm text-gray-600 mb-3">emma.d@example.com</p>
+                <div class="w-full space-y-2 text-sm">
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Orders:</span>
+                    <span class="font-bold text-amber-900">17</span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-600">Total Spent:</span>
+                    <span class="font-bold text-green-600">$354.00</span>
+                  </div>
+                </div>
+                <button onclick="viewCustomer('Emma Davis')" class="w-full mt-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all">
+                  View Profile
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- All Customers Table -->
+        <div class="bg-white rounded-2xl shadow-lg border border-amber-100 overflow-hidden">
+          <div class="p-6 border-b border-amber-100">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h3 class="text-xl font-bold text-amber-900">All Customers</h3>
+                <p class="text-sm text-gray-600">Complete customer database</p>
+              </div>
+              <div class="flex gap-3 w-full md:w-auto">
+                <div class="relative flex-1 md:flex-none">
+                  <input type="text" placeholder="Search customers..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 w-full md:w-64">
+                  <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+                <button class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all whitespace-nowrap">
+                  <i class="fas fa-filter mr-2"></i>Filter
+                </button>
+                <button onclick="openAddModal()" class="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all whitespace-nowrap">
+                  <i class="fas fa-user-plus mr-2"></i>Add
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gradient-to-r from-amber-100 to-orange-100">
+                <tr>
+                  <th class="px-6 py-4 text-left font-bold text-amber-900">Customer</th>
+                  <th class="px-6 py-4 text-left font-bold text-amber-900">Email</th>
+                  <th class="px-6 py-4 text-left font-bold text-amber-900">Phone</th>
+                  <th class="px-6 py-4 text-left font-bold text-amber-900">Orders</th>
+                  <th class="px-6 py-4 text-left font-bold text-amber-900">Total Spent</th>
+                  <th class="px-6 py-4 text-left font-bold text-amber-900">Status</th>
+                  <th class="px-6 py-4 text-center font-bold text-amber-900">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-amber-100">
+                <tr class="transition-colors cursor-pointer">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <img src="https://ui-avatars.com/api/?name=Sarah+Johnson&background=f59e0b&color=fff" class="w-10 h-10 rounded-full shadow" alt="Sarah Johnson">
+                      <div>
+                        <p class="font-semibold text-amber-900">Sarah Johnson</p>
+                        <p class="text-xs text-gray-500">Member since 2023</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-gray-600">sarah.j@example.com</td>
+                  <td class="px-6 py-4 text-gray-600">+1 234-567-8901</td>
+                  <td class="px-6 py-4 font-semibold text-amber-900">31</td>
+                  <td class="px-6 py-4 font-bold text-green-600">$687.00</td>
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Active</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center justify-center gap-3">
+
+                        <button 
+                        onclick="viewCustomer('Sarah Johnson')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-900 transition">
+                        <i class="fas fa-eye text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="editCustomer('Sarah Johnson')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-800 transition">
+                        <i class="fas fa-edit text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="deleteCustomer('Sarah Johnson')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 transition">
+                        <i class="fas fa-trash text-sm"></i>
+                        </button>
+
+                    </div>
+                    </td>
+
+                </tr>
+
+                <tr class="transition-colors cursor-pointer">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <img src="https://ui-avatars.com/api/?name=David+Lee&background=ef4444&color=fff" class="w-10 h-10 rounded-full shadow" alt="David Lee">
+                      <div>
+                        <p class="font-semibold text-amber-900">David Lee</p>
+                        <p class="text-xs text-gray-500">Member since 2024</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-gray-600">david.l@example.com</td>
+                  <td class="px-6 py-4 text-gray-600">+1 234-567-8902</td>
+                  <td class="px-6 py-4 font-semibold text-amber-900">14</td>
+                  <td class="px-6 py-4 font-bold text-green-600">$219.00</td>
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Active</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center justify-center gap-3">
+
+                        <button 
+                        onclick="viewCustomer('David Lee')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-900 transition">
+                        <i class="fas fa-eye text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="editCustomer('David Lee')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-800 transition">
+                        <i class="fas fa-edit text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="deleteCustomer('David Lee')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 transition">
+                        <i class="fas fa-trash text-sm"></i>
+                        </button>
+
+                    </div>
+                    </td>
+
+                </tr>
+
+                <tr class="transition-colors cursor-pointer">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <img src="https://ui-avatars.com/api/?name=Jane+Mitchell&background=3b82f6&color=fff" class="w-10 h-10 rounded-full shadow" alt="Jane Mitchell">
+                      <div>
+                        <p class="font-semibold text-amber-900">Jane Mitchell</p>
+                        <p class="text-xs text-gray-500">Member since 2023</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-gray-600">jane.m@example.com</td>
+                  <td class="px-6 py-4 text-gray-600">+1 234-567-8903</td>
+                  <td class="px-6 py-4 font-semibold text-amber-900">23</td>
+                  <td class="px-6 py-4 font-bold text-green-600">$452.00</td>
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Active</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center justify-center gap-3">
+
+                        <button 
+                        onclick="viewCustomer('jane Mitchell')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-900 transition">
+                        <i class="fas fa-eye text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="editCustomer('Jane Mitchell')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-800 transition">
+                        <i class="fas fa-edit text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="deleteCustomer('Jane Mitchell')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 transition">
+                        <i class="fas fa-trash text-sm"></i>
+                        </button>
+
+                    </div>
+                    </td>
+
+                </tr>
+
+                <tr class="transition-colors cursor-pointer">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <img src="https://ui-avatars.com/api/?name=Michael+Chen&background=10b981&color=fff" class="w-10 h-10 rounded-full shadow" alt="Michael Chen">
+                      <div>
+                        <p class="font-semibold text-amber-900">Michael Chen</p>
+                        <p class="text-xs text-gray-500">Member since 2024</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-gray-600">m.chen@example.com</td>
+                  <td class="px-6 py-4 text-gray-600">+1 234-567-8904</td>
+                  <td class="px-6 py-4 font-semibold text-amber-900">19</td>
+                  <td class="px-6 py-4 font-bold text-green-600">$389.00</td>
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Active</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center justify-center gap-3">
+
+                        <button 
+                        onclick="viewCustomer('Michael Chen')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-900 transition">
+                        <i class="fas fa-eye text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="editCustomer('Michael Chen')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-800 transition">
+                        <i class="fas fa-edit text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="deleteCustomer('Michael Chen')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 transition">
+                        <i class="fas fa-trash text-sm"></i>
+                        </button>
+
+                    </div>
+                    </td>
+
+                </tr>
+
+                <tr class="transition-colors cursor-pointer">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <img src="https://ui-avatars.com/api/?name=Emma+Davis&background=8b5cf6&color=fff" class="w-10 h-10 rounded-full shadow" alt="Emma Davis">
+                      <div>
+                        <p class="font-semibold text-amber-900">Emma Davis</p>
+                        <p class="text-xs text-gray-500">Member since 2024</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-gray-600">emma.d@example.com</td>
+                  <td class="px-6 py-4 text-gray-600">+1 234-567-8905</td>
+                  <td class="px-6 py-4 font-semibold text-amber-900">17</td>
+                  <td class="px-6 py-4 font-bold text-green-600">$354.00</td>
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Active</span>
+                  </td>
+                 <td class="px-6 py-4">
+                    <div class="flex items-center justify-center gap-3">
+
+                        <button 
+                        onclick="viewCustomer('Emma Davis')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-900 transition">
+                        <i class="fas fa-eye text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="editCustomer('Emma Davis')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-800 transition">
+                        <i class="fas fa-edit text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="deleteCustomer('Emma Davis')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 transition">
+                        <i class="fas fa-trash text-sm"></i>
+                        </button>
+
+                    </div>
+                    </td>
+
+                </tr>
+
+                <tr class="transition-colors cursor-pointer">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <img src="https://ui-avatars.com/api/?name=Robert+Wilson&background=f97316&color=fff" class="w-10 h-10 rounded-full shadow" alt="Robert Wilson">
+                      <div>
+                        <p class="font-semibold text-amber-900">Robert Wilson</p>
+                        <p class="text-xs text-gray-500">Member since 2024</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-gray-600">r.wilson@example.com</td>
+                  <td class="px-6 py-4 text-gray-600">+1 234-567-8906</td>
+                  <td class="px-6 py-4 font-semibold text-amber-900">8</td>
+                  <td class="px-6 py-4 font-bold text-green-600">$156.00</td>
+                  <td class="px-6 py-4">
+                    <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">Inactive</span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center justify-center gap-3">
+
+                        <button 
+                        onclick="viewCustomer('Robert Wilson')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-900 transition">
+                        <i class="fas fa-eye text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="editCustomer('Robert Wilson')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 hover:text-blue-800 transition">
+                        <i class="fas fa-edit text-sm"></i>
+                        </button>
+
+                        <button 
+                        onclick="deleteCustomer('Robert Wilson')" 
+                        class="w-9 h-9 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-800 transition">
+                        <i class="fas fa-trash text-sm"></i>
+                        </button>
+
+                    </div>
+                    </td>
+
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="p-6 border-t border-amber-100">
+            <div class="flex items-center justify-between">
+              <p class="text-sm text-gray-600">Showing 1 to 6 of 1,847 customers</p>
+              <div class="flex gap-2">
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-semibold">1</button>
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">2</button>
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">3</button>
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">...</button>
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">308</button>
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- View Customer Modal -->
+  <div id="viewModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-3xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-gradient-to-r from-amber-500 to-orange-500 p-6 rounded-t-2xl">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <img src="https://ui-avatars.com/api/?name=Sarah+Johnson&background=fff&color=f59e0b" class="w-16 h-16 rounded-full shadow-lg" alt="Customer">
+            <div>
+              <h2 class="text-2xl font-bold text-white" id="viewCustomerName">Sarah Johnson</h2>
+              <p class="text-amber-100 text-sm">Customer Profile</p>
+            </div>
+          </div>
+          <button onclick="closeViewModal()" class="text-white hover:text-amber-100 transition-colors">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-6 space-y-6">
+        <!-- Contact Information -->
+        <div>
+          <h3 class="font-bold text-amber-900 text-lg mb-3 flex items-center gap-2">
+            <i class="fas fa-address-card text-amber-600"></i>
+            Contact Information
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-amber-50 p-4 rounded-lg">
+              <p class="text-sm text-gray-600 mb-1">Email</p>
+              <p class="font-semibold text-amber-900">sarah.j@example.com</p>
+            </div>
+            <div class="bg-amber-50 p-4 rounded-lg">
+              <p class="text-sm text-gray-600 mb-1">Phone</p>
+              <p class="font-semibold text-amber-900">+1 234-567-8901</p>
+            </div>
+            <div class="bg-amber-50 p-4 rounded-lg md:col-span-2">
+              <p class="text-sm text-gray-600 mb-1">Address</p>
+              <p class="font-semibold text-amber-900">123 Spice Lane, Flavor Town, CA 90210</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Purchase Statistics -->
+        <div>
+          <h3 class="font-bold text-amber-900 text-lg mb-3 flex items-center gap-2">
+            <i class="fas fa-chart-bar text-amber-600"></i>
+            Purchase Statistics
+          </h3>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-green-50 p-4 rounded-lg text-center">
+              <p class="text-sm text-gray-600 mb-1">Total Orders</p>
+              <p class="text-2xl font-bold text-green-600">31</p>
+            </div>
+            <div class="bg-blue-50 p-4 rounded-lg text-center">
+              <p class="text-sm text-gray-600 mb-1">Total Spent</p>
+              <p class="text-2xl font-bold text-blue-600">$687</p>
+            </div>
+            <div class="bg-purple-50 p-4 rounded-lg text-center">
+              <p class="text-sm text-gray-600 mb-1">Avg Order</p>
+              <p class="text-2xl font-bold text-purple-600">$22</p>
+            </div>
+            <div class="bg-orange-50 p-4 rounded-lg text-center">
+              <p class="text-sm text-gray-600 mb-1">Last Order</p>
+              <p class="text-2xl font-bold text-orange-600">2d</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div>
+          <h3 class="font-bold text-amber-900 text-lg mb-3 flex items-center gap-2">
+            <i class="fas fa-shopping-bag text-amber-600"></i>
+            Recent Orders
+          </h3>
+          <div class="space-y-2">
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div>
+                <p class="font-semibold text-gray-900">#ORD-3421</p>
+                <p class="text-sm text-gray-600">Turmeric, Black Pepper</p>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-green-600">$89.90</p>
+                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Delivered</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div>
+                <p class="font-semibold text-gray-900">#ORD-3398</p>
+                <p class="text-sm text-gray-600">Cinnamon Sticks</p>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-green-600">$42.50</p>
+                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Delivered</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div>
+                <p class="font-semibold text-gray-900">#ORD-3375</p>
+                <p class="text-sm text-gray-600">Cardamom Pods</p>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-green-600">$156.20</p>
+                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Processing</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="closeViewModal()" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Customer Modal -->
+  <div id="addModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-gradient-to-r from-green-500 to-emerald-500 p-6 rounded-t-2xl">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold text-white">Add New Customer</h2>
+          <button onclick="closeAddModal()" class="text-white hover:text-green-100 transition-colors">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <form class="p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">First Name</label>
+            <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter first name">
+          </div>
+          
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Last Name</label>
+            <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter last name">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Email</label>
+            <input type="email" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="customer@example.com">
+          </div>
+          
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Phone</label>
+            <input type="tel" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="+1 234-567-8900">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Address</label>
+          <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Street address">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">City</label>
+            <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="City">
+          </div>
+          
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">State</label>
+            <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="State">
+          </div>
+          
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">ZIP Code</label>
+            <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="12345">
+          </div>
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+            <i class="fas fa-user-plus mr-2"></i>Add Customer
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Customer Modal -->
+  <div id="editModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-gradient-to-r from-blue-500 to-cyan-500 p-6 rounded-t-2xl">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold text-white">Edit Customer</h2>
+          <button onclick="closeEditModal()" class="text-white hover:text-blue-100 transition-colors">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <form class="p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">First Name</label>
+            <input type="text" id="editFirstName" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" value="Sarah">
+          </div>
+          
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Last Name</label>
+            <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" value="Johnson">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Email</label>
+            <input type="email" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" value="sarah.j@example.com">
+          </div>
+          
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Phone</label>
+            <input type="tel" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" value="+1 234-567-8901">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Address</label>
+          <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" value="123 Spice Lane">
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">City</label>
+            <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" value="Flavor Town">
+          </div>
+          
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">State</label>
+            <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" value="CA">
+          </div>
+          
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">ZIP Code</label>
+            <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" value="90210">
+          </div>
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+            <i class="fas fa-save mr-2"></i>Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Customer Modal -->
+  <div id="deleteModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+      <div class="p-6">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-user-times text-red-500 text-3xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 text-center mb-2">Delete Customer?</h2>
+        <p class="text-gray-600 text-center mb-6">Are you sure you want to delete <span id="deleteCustomerName" class="font-semibold text-amber-900"></span>? This will also delete all their order history.</p>
+        
+        <div class="flex gap-3">
+          <button onclick="closeDeleteModal()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button onclick="confirmDelete()" class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+            <i class="fas fa-trash mr-2"></i>Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Modal Functions
+    function viewCustomer(customerName) {
+      document.getElementById('viewCustomerName').textContent = customerName;
+      document.getElementById('viewModal').classList.add('active');
+    }
+
+    function closeViewModal() {
+      document.getElementById('viewModal').classList.remove('active');
+    }
+
+    function openAddModal() {
+      document.getElementById('addModal').classList.add('active');
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').classList.remove('active');
+    }
+
+    function editCustomer(customerName) {
+      document.getElementById('editFirstName').value = customerName.split(' ')[0];
+      document.getElementById('editModal').classList.add('active');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('active');
+    }
+
+    function deleteCustomer(customerName) {
+      document.getElementById('deleteCustomerName').textContent = customerName;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    function confirmDelete() {
+      closeDeleteModal();
+      alert('Customer deleted successfully!');
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        if (event.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

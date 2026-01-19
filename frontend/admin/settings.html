@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spice Haven - Settings</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .sidebar { transition: all 0.3s; }
+    a.no-underline { text-decoration: none; }
+    .nav-link.active { background-color: rgba(255, 255, 255, 0.2); color: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+    .settings-tab { transition: all 0.3s; cursor: pointer; }
+    .settings-tab.active { background: linear-gradient(135deg, #f59e0b, #fb923c); color: white; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+    .settings-content { display: none; }
+    .settings-content.active { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .toggle-switch { position: relative; width: 48px; height: 24px; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+    .toggle-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+    input:checked + .toggle-slider { background-color: #f59e0b; }
+    input:checked + .toggle-slider:before { transform: translateX(24px); }
+
+    @keyframes slide-in {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    .animate-slide-in {
+      animation: slide-in 0.4s ease forwards;
+    }
+
+    .animate-fadeIn { 
+      animation: fadeIn 0.5s; 
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 min-h-screen">
+  
+  <div class="flex">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar w-64 bg-gradient-to-b from-amber-900 to-orange-900 min-h-screen p-4 shadow-2xl fixed left-0 top-0 bottom-0 z-50 text-white">
+      <!-- Logo -->
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-2">
+          <img src="img/logo.jpeg" alt="Spice Haven Logo" class="h-8 w-8">
+          <h2 class="text-xl font-bold">Spice Haven</h2>
+        </div>
+      </div>
+      
+      <!-- Navigation -->
+      <nav class="space-y-2">
+        <a href="dashboard.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-th-large w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        
+        <a href="products.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-box w-5 h-5"></i>
+          <span>Products</span>
+        </a>
+        
+        <a href="flash-sales.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-bolt w-5 h-5"></i>
+          <span>Flash Sales</span>
+        </a>
+        
+        <a href="customers.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-users w-5 h-5"></i>
+          <span>Customers</span>
+        </a>
+        
+        <a href="orders.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-shopping-cart w-5 h-5"></i>
+          <span>Orders</span>
+        </a>
+        
+        <a href="messages.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-envelope w-5 h-5"></i>
+          <span>Messages</span>
+          <span id="message-badge" class="ml-auto bg-red-600 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
+        </a>
+        
+        <a href="report.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-chart-pie w-5 h-5"></i>
+          <span>Report</span>
+        </a>
+        
+        <a href="settings.html" class="nav-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-cog w-5 h-5"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <!-- User Profile Section at Bottom -->
+      <div class="absolute bottom-6 left-4 right-4">
+        <div class="bg-amber-800 bg-opacity-50 rounded-xl p-4 backdrop-blur-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+              A
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-white">Admin User</p>
+              <p class="text-xs text-amber-200">Online</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 ml-64">
+      <!-- Header -->
+      <header class="bg-white shadow-md border-b border-amber-200 sticky top-0 z-40">
+        <div class="px-8 py-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-2xl font-bold text-amber-900">Settings</h1>
+              <p class="text-sm text-amber-700">Manage your account and preferences</p>
+            </div>
+            <div class="flex items-center gap-6">
+              <button class="relative">
+                <i class="fas fa-bell text-gray-600 text-xl"></i>
+                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+              </button>
+              <div class="flex items-center gap-2 cursor-pointer hover:bg-amber-50 px-3 py-2 rounded-lg transition-colors">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=f59e0b&color=fff" class="w-9 h-9 rounded-full shadow-md" alt="User">
+                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="p-8">
+        <div class="flex gap-6">
+          <!-- Settings Sidebar -->
+          <div class="w-72 flex-shrink-0">
+            <div class="bg-white rounded-2xl shadow-lg p-4 border border-amber-100 sticky top-24">
+              <div class="space-y-2">
+                <div class="settings-tab active flex items-center gap-3 px-4 py-3 rounded-xl" onclick="switchTab('profile')">
+                  <i class="fas fa-user"></i>
+                  <span class="font-semibold">Profile</span>
+                </div>
+                <div class="settings-tab flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-50" onclick="switchTab('security')">
+                  <i class="fas fa-lock"></i>
+                  <span class="font-semibold">Security</span>
+                </div>
+                <div class="settings-tab flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-50" onclick="switchTab('notifications')">
+                  <i class="fas fa-bell"></i>
+                  <span class="font-semibold">Notifications</span>
+                </div>
+                <div class="settings-tab flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-50" onclick="switchTab('store')">
+                  <i class="fas fa-store"></i>
+                  <span class="font-semibold">Store Settings</span>
+                </div>
+                <div class="settings-tab flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-50" onclick="switchTab('payment')">
+                  <i class="fas fa-credit-card"></i>
+                  <span class="font-semibold">Payment</span>
+                </div>
+                <div class="settings-tab flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-50" onclick="switchTab('appearance')">
+                  <i class="fas fa-palette"></i>
+                  <span class="font-semibold">Appearance</span>
+                </div>
+                <div class="settings-tab flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-amber-50" onclick="switchTab('preferences')">
+                  <i class="fas fa-cog"></i>
+                  <span class="font-semibold">Preferences</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settings Content -->
+          <div class="flex-1">
+            
+            <!-- Profile Settings -->
+            <div id="profile" class="settings-content active">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border border-amber-100 mb-6">
+                <h2 class="text-2xl font-bold text-amber-900 mb-6 flex items-center gap-2">
+                  <i class="fas fa-user text-amber-600"></i>
+                  Profile Information
+                </h2>
+                
+                <div class="flex items-center gap-6 mb-8 pb-8 border-b border-gray-200">
+                  <div class="relative">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=f59e0b&color=fff&size=120" class="w-24 h-24 rounded-full shadow-lg" alt="Profile" id="profileImage">
+                    <input type="file" accept="image/*" id="profileUpload" class="hidden" title="Upload Profile Photo">
+                    <label for="profileUpload" class="sr-only">Upload Profile Photo</label>
+                    <button type="button" id="profileBtn" class="absolute bottom-0 right-0 bg-gradient-to-r from-amber-500 to-orange-500 text-white p-2 rounded-full shadow-lg hover:shadow-xl transition-all" aria-label="Upload profile photo">
+                      <i class="fas fa-camera text-sm"></i>
+                    </button>
+                  </div>
+                  <div>
+                    <h3 class="text-xl font-bold text-gray-900">Admin User</h3>
+                    <p class="text-gray-600">admin@spicehaven.com</p>
+                    <button class="mt-2 text-amber-600 hover:text-amber-700 font-semibold text-sm">
+                      <i class="fas fa-upload mr-1"></i>Change Photo
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">First Name</label>
+                    <input type="text" value="Admin" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter first name" aria-label="First Name">
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Last Name</label>
+                    <input type="text" value="User" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter last name" aria-label="Last Name">
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Email Address</label>
+                    <input type="email" value="admin@spicehaven.com" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter email address" aria-label="Email Address">
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Phone Number</label>
+                    <input type="tel" value="+1 234-567-8900" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter phone number" aria-label="Phone Number">
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Bio</label>
+                    <textarea rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Tell us about yourself..." aria-label="Bio">Managing Spice Haven with passion for quality spices and excellent customer service.</textarea>
+                  </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                  <button id="saveStoreSettings" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                  </button>
+                  <button class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div id="security" class="settings-content">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border border-amber-100 mb-6">
+                <h2 class="text-2xl font-bold text-amber-900 mb-6 flex items-center gap-2">
+                  <i class="fas fa-lock text-amber-600"></i>
+                  Security Settings
+                </h2>
+
+                <div class="mb-8 pb-8 border-b border-gray-200">
+                  <h3 class="text-lg font-bold text-gray-900 mb-4">Change Password</h3>
+                  <div class="space-y-4">
+                    <div>
+                      <label class="block text-gray-700 text-sm font-semibold mb-2">Current Password</label>
+                      <input type="password" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter current password" aria-label="Current password">
+                    </div>
+                    <div>
+                      <label class="block text-gray-700 text-sm font-semibold mb-2">New Password</label>
+                      <input type="password" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter new password" aria-label="New password">
+                    </div>
+                    <div>
+                      <label class="block text-gray-700 text-sm font-semibold mb-2">Confirm New Password</label>
+                      <input type="password" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Confirm new password" aria-label="Confirm new password">
+                    </div>
+                    <button onclick="openPasswordModal()" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                      Change Password
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mb-8 pb-8 border-b border-gray-200">
+                  <h3 class="text-lg font-bold text-gray-900 mb-4">Two-Factor Authentication</h3>
+                  <div class="flex items-center justify-between p-4 bg-amber-50 rounded-lg">
+                    <div>
+                      <p class="font-semibold text-gray-900">Enable 2FA</p>
+                      <p class="text-sm text-gray-600">Add an extra layer of security to your account</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="twoFactorToggle" aria-label="Enable 2FA">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="text-lg font-bold text-gray-900 mb-4">Active Sessions</h3>
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div class="flex items-center gap-3">
+                        <div class="bg-green-100 p-3 rounded-lg">
+                          <i class="fas fa-desktop text-green-600"></i>
+                        </div>
+                        <div>
+                          <p class="font-semibold text-gray-900">Windows PC - Chrome</p>
+                          <p class="text-sm text-gray-600">Current session • Kenya</p>
+                        </div>
+                      </div>
+                      <span class="text-green-600 font-semibold text-sm">Active</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div class="flex items-center gap-3">
+                        <div class="bg-gray-100 p-3 rounded-lg">
+                          <i class="fas fa-mobile-alt text-gray-600"></i>
+                        </div>
+                        <div>
+                          <p class="font-semibold text-gray-900">iPhone 13 - Safari</p>
+                          <p class="text-sm text-gray-600">Last active 2 hours ago • Kenya</p>
+                        </div>
+                      </div>
+                      <button class="text-red-600 hover:text-red-700 font-semibold text-sm">Revoke</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Notifications Settings -->
+            <div id="notifications" class="settings-content">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border border-amber-100 mb-6">
+                <h2 class="text-2xl font-bold text-amber-900 mb-6 flex items-center gap-2">
+                  <i class="fas fa-bell text-amber-600"></i>
+                  Notification Preferences
+                </h2>
+
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                      <p class="font-semibold text-gray-900">Order Notifications</p>
+                      <p class="text-sm text-gray-600">Receive alerts when new orders are placed</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="notifOrder" checked aria-label="Order Notifications">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                      <p class="font-semibold text-gray-900">Email Notifications</p>
+                      <p class="text-sm text-gray-600">Get updates via email</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="notifEmail" checked aria-label="Email Notifications">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                      <p class="font-semibold text-gray-900">SMS Notifications</p>
+                      <p class="text-sm text-gray-600">Receive text messages for important updates</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="notifSMS" aria-label="SMS Notifications">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                      <p class="font-semibold text-gray-900">Low Stock Alerts</p>
+                      <p class="text-sm text-gray-600">Get notified when products are running low</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="notifLowStock" checked aria-label="Low Stock Alerts">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                      <p class="font-semibold text-gray-900">Customer Reviews</p>
+                      <p class="text-sm text-gray-600">Notifications for new customer reviews</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="notifReviews" checked aria-label="Customer Reviews">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                      <p class="font-semibold text-gray-900">Marketing Emails</p>
+                      <p class="text-sm text-gray-600">Receive promotional content and tips</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="notifMarketing" aria-label="Marketing Emails">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+
+                  <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                    <div>
+                      <p class="font-semibold text-gray-900">Weekly Reports</p>
+                      <p class="text-sm text-gray-600">Get weekly sales and performance summaries</p>
+                    </div>
+                    <label class="toggle-switch">
+                      <input type="checkbox" id="notifWeekly" checked aria-label="Weekly Reports">
+                      <span class="toggle-slider"></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Store Settings -->
+            <div id="store" class="settings-content">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border border-amber-100 mb-6">
+                <h2 class="text-2xl font-bold text-amber-900 mb-6 flex items-center gap-2">
+                  <i class="fas fa-store text-amber-600"></i>
+                  Store Configuration
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Store Name</label>
+                    <input type="text" id="storeName" value="Spice Haven" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter store name" aria-label="Store Name">
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Store Email</label>
+                    <input type="email" id="storeEmail" value="contact@spicehaven.com" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter store email" aria-label="Store Email">
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Phone Number</label>
+                    <input type="tel" id="storePhone" value="+1 800-SPICES" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter phone number" aria-label="Phone Number">
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Currency</label>
+                    <select id="storeCurrency" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" aria-label="Currency">
+                      <option>USD ($)</option>
+                      <option>EUR (€)</option>
+                      <option>GBP (£)</option>
+                      <option>KES (KSh)</option>
+                    </select>
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Store Address</label>
+                    <textarea id="storeAddress" rows="3" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter store address" aria-label="Store Address">123 Spice Lane, Flavor Town, CA 90210</textarea>
+                  </div>
+                </div>
+
+                <div class="mb-8 pb-8 border-b border-gray-200">
+                  <h3 class="text-lg font-bold text-gray-900 mb-4">Business Hours</h3>
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                      <span class="text-gray-700 font-medium">Monday - Friday</span>
+                      <input type="text" id="hoursMonFri" value="9:00 AM - 6:00 PM" class="border border-gray-300 rounded-lg p-2 w-48 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-gray-700 font-medium">Saturday</span>
+                      <input type="text" id="hoursSat" value="10:00 AM - 4:00 PM" class="border border-gray-300 rounded-lg p-2 w-48 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-gray-700 font-medium">Sunday</span>
+                      <input type="text" id="hoursSun" value="Closed" class="border border-gray-300 rounded-lg p-2 w-48 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="text-lg font-bold text-gray-900 mb-4">Tax Settings</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label class="block text-gray-700 text-sm font-semibold mb-2">Tax Rate (%)</label>
+                      <input type="number" id="taxRate" value="8.5" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <div>
+                      <label class="block text-gray-700 text-sm font-semibold mb-2">Tax ID</label>
+                      <input type="text" id="taxID" value="123-45-6789" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                  <button id="saveStoreSettingsBtn" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                  </button>
+                  <button class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Settings -->
+            <div id="payment" class="settings-content">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border border-amber-100 mb-6">
+                <h2 class="text-2xl font-bold text-amber-900 mb-6 flex items-center gap-2">
+                  <i class="fas fa-credit-card text-amber-600"></i>
+                  Payment Methods
+                </h2>
+
+                <div class="mb-8">
+                  <h3 class="text-lg font-bold text-gray-900 mb-4">Accepted Payment Methods</h3>
+                  <div class="space-y-3">
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div class="flex items-center gap-3">
+                        <i class="fab fa-cc-visa text-3xl text-blue-600"></i>
+                        <div>
+                          <p class="font-semibold text-gray-900">Credit/Debit Cards</p>
+                          <p class="text-sm text-gray-600">Visa, Mastercard, Amex</p>
+                        </div>
+                      </div>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="pmCreditCard" checked aria-label="Credit/Debit Cards">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div class="flex items-center gap-3">
+                        <i class="fab fa-paypal text-3xl text-blue-500"></i>
+                        <div>
+                          <p class="font-semibold text-gray-900">PayPal</p>
+                          <p class="text-sm text-gray-600">Fast and secure payments</p>
+                        </div>
+                      </div>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="pmPayPal" checked aria-label="PayPal">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div class="flex items-center gap-3">
+                        <i class="fab fa-google-pay text-3xl text-gray-700"></i>
+                        <div>
+                          <p class="font-semibold text-gray-900">Google Pay</p>
+                          <p class="text-sm text-gray-600">Quick mobile payments</p>
+                        </div>
+                      </div>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="pmGooglePay" aria-label="Google Pay">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div class="flex items-center gap-3">
+                        <i class="fab fa-apple-pay text-3xl text-gray-900"></i>
+                        <div>
+                          <p class="font-semibold text-gray-900">Apple Pay</p>
+                          <p class="text-sm text-gray-600">Seamless iOS payments</p>
+                        </div>
+                      </div>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="pmApplePay" aria-label="Apple Pay">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div class="flex items-center gap-3">
+                        <i class="fas fa-money-bill text-3xl text-green-600"></i>
+                        <div>
+                          <p class="font-semibold text-gray-900">Cash on Delivery</p>
+                          <p class="text-sm text-gray-600">Pay when you receive</p>
+                        </div>
+                      </div>
+                      <label class="toggle-switch">
+                        <input type="checkbox" id="pmCOD" checked aria-label="Cash on Delivery">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-8 pb-8 border-b border-gray-200">
+                  <h3 class="text-lg font-bold text-gray-900 mb-4">Payment Gateway</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label class="block text-gray-700 text-sm font-semibold mb-2">Gateway Provider</label>
+                      <select id="gatewayProvider" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option>Stripe</option>
+                        <option>PayPal</option>
+                        <option>Square</option>
+                        <option>Authorize.net</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-gray-700 text-sm font-semibold mb-2">API Key</label>
+                      <input type="password" id="gatewayAPIKey" value="sk_test_xxxxxxxxxxxx" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="text-lg font-bold text-gray-900 mb-4">Shipping Settings</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label class="block text-gray-700 text-sm font-semibold mb-2">Flat Shipping Rate</label>
+                      <input type="number" id="shippingFlatRate" value="8.00" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    <div>
+                      <label class="block text-gray-700 text-sm font-semibold mb-2">Free Shipping Threshold</label>
+                      <input type="number" id="shippingFreeThreshold" value="100.00" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                  <button id="savePaymentSettings" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                  </button>
+                  <button class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Appearance Settings -->
+            <div id="appearance" class="settings-content">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border border-amber-100 mb-6">
+                <h2 class="text-2xl font-bold text-amber-900 mb-6 flex items-center gap-2">
+                  <i class="fas fa-palette text-amber-600"></i>
+                  Appearance & Theme
+                </h2>
+
+                <div class="mb-8 pb-8 border-b border-gray-200">
+                  <h3 class="text-lg font-bold text-gray-900 mb-4">Theme Selection</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="border-2 border-amber-500 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-all">
+                      <div class="bg-gradient-to-br from-amber-100 to-orange-100 h-24 rounded-lg mb-3"></div>
+                      <p class="font-semibold text-center">Spice Theme (Current)</p>
+                      <p class="text-sm text-gray-600 text-center">Warm amber colors</p>
+                    </div>
+                    <div class="border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-all">
+                      <div class="bg-gradient-to-br from-blue-100 to-cyan-100 h-24 rounded-lg mb-3"></div>
+                      <p class="font-semibold text-center">Ocean Theme</p>
+                      <p class="text-sm text-gray-600 text-center">Cool blue tones</p>
+                    </div>
+                    <div class="border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:shadow-lg transition-all">
+                      <div class="bg-gradient-to-br from-purple-100 to-pink-100 h-24 rounded-lg mb-3"></div>
+                      <p class="font-semibold text-center">Lavender Theme</p>
+                      <p class="text-sm text-gray-600 text-center">Purple gradients</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-8 pb-8 border-b border-gray-200">
+                  <h3 class="text-lg font-bold text-gray-900 mb-4">Display Options</h3>
+                  <div class="space-y-4">
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div>
+                        <p class="font-semibold text-gray-900">Dark Mode</p>
+                        <p class="text-sm text-gray-600">Switch to dark theme</p>
+                      </div>
+                      <label class="toggle-switch">
+                        <input type="checkbox" aria-label="Dark Mode">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div>
+                        <p class="font-semibold text-gray-900">Compact View</p>
+                        <p class="text-sm text-gray-600">Reduce spacing and padding</p>
+                      </div>
+                      <label class="toggle-switch">
+                        <input type="checkbox" aria-label="Compact View">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div>
+                        <p class="font-semibold text-gray-900">Sidebar Collapsed</p>
+                        <p class="text-sm text-gray-600">Show only icons in sidebar</p>
+                      </div>
+                      <label class="toggle-switch">
+                        <input type="checkbox" aria-label="Sidebar Collapsed">
+                        <span class="toggle-slider"></span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="text-lg font-bold text-gray-900 mb-4">Font Settings</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label class="block text-gray-700 text-sm font-semibold mb-2">Font Family</label>
+                      <select class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option>System Default</option>
+                        <option>Inter</option>
+                        <option>Roboto</option>
+                        <option>Open Sans</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="block text-gray-700 text-sm font-semibold mb-2">Font Size</label>
+                      <select class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option>Small</option>
+                        <option selected>Medium</option>
+                        <option>Large</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                  <button class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                  </button>
+                  <button class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                    Reset to Default
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preferences Settings -->
+            <div id="preferences" class="settings-content">
+              <div class="bg-white rounded-2xl shadow-lg p-8 border border-amber-100 mb-6">
+                <h2 class="text-2xl font-bold text-amber-900 mb-6 flex items-center gap-2">
+                  <i class="fas fa-cog text-amber-600"></i>
+                  Preferences
+                </h2>
+
+                <div class="space-y-6">
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Language</label>
+                    <select id="languageSelect" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                      <option value="en">English</option>
+                      <option value="es">Spanish</option>
+                      <option value="fr">French</option>
+                      <option value="de">German</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="block text-gray-700 text-sm font-semibold mb-2">Currency</label>
+                    <select id="currencySelect" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                      <option value="USD">USD ($)</option>
+                      <option value="EUR">EUR (€)</option>
+                      <option value="GBP">GBP (£)</option>
+                      <option value="KES">KES (KSh)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="flex gap-3 mt-6">
+                  <button class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                  </button>
+                  <button class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Tab switching functionality
+    function switchTab(tabName) {
+      // Hide all content sections
+      const contents = document.querySelectorAll('.settings-content');
+      contents.forEach(content => {
+        content.classList.remove('active');
+      });
+
+      // Remove active class from all tabs
+      const tabs = document.querySelectorAll('.settings-tab');
+      tabs.forEach(tab => {
+        tab.classList.remove('active');
+        tab.classList.add('hover:bg-amber-50');
+      });
+
+      // Show selected content
+      document.getElementById(tabName).classList.add('active');
+
+      // Add active class to clicked tab
+      event.currentTarget.classList.add('active');
+      event.currentTarget.classList.remove('hover:bg-amber-50');
+    }
+
+    // Save settings function
+    function saveSettings() {
+      // Show success message
+      alert('Settings saved successfully!');
+    }
+
+    // Toggle notifications
+    document.querySelectorAll('.toggle-switch input').forEach(toggle => {
+      toggle.addEventListener('change', function() {
+        console.log('Toggle changed:', this.checked);
+      });
+    });
+
+    const profileBtn = document.getElementById('profileBtn');
+    const profileUpload = document.getElementById('profileUpload');
+    const profileImage = document.getElementById('profileImage');
+
+    profileBtn.addEventListener('click', function() {
+      profileUpload.click();
+    });
+
+    profileUpload.addEventListener('change', function() {
+      const file = this.files[0];
+      if(file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          profileImage.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    const twoFactorToggle = document.getElementById('twoFactorToggle');
+
+    // Load previous state if stored (optional for now using localStorage)
+    window.addEventListener('DOMContentLoaded', () => {
+      const saved2FA = localStorage.getItem('twoFactorEnabled') === 'true';
+      twoFactorToggle.checked = saved2FA;
+    });
+
+    twoFactorToggle.addEventListener('change', () => {
+      const enabled = twoFactorToggle.checked;
+      localStorage.setItem('twoFactorEnabled', enabled);
+
+      if(enabled){
+        showToast('Two-Factor Authentication Enabled', 'success');
+      } else {
+        showToast('Two-Factor Authentication Disabled', 'error');
+      }
+    });
+
+    // Open & Close Modal
+    function openPasswordModal() {
+      document.getElementById('passwordModal').classList.remove('hidden');
+      document.getElementById('passwordModal').classList.add('flex');
+    }
+
+    function closePasswordModal() {
+      document.getElementById('passwordModal').classList.add('hidden');
+      document.getElementById('passwordModal').classList.remove('flex');
+    }
+
+
+
+    // Simple toast function
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.textContent = message;
+      toast.className = `fixed bottom-6 right-6 px-4 py-2 rounded-lg text-white font-semibold shadow-lg
+        ${type === 'success' ? 'bg-green-600' : 'bg-red-600'}`;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    const updatePasswordBtn = document.getElementById('updatePasswordBtn');
+    const currentPassword = document.getElementById('currentPassword');
+    const newPassword = document.getElementById('newPassword');
+    const confirmPassword = document.getElementById('confirmPassword');
+
+    updatePasswordBtn.addEventListener('click', () => {
+      const current = currentPassword.value.trim();
+      const newPass = newPassword.value.trim();
+      const confirm = confirmPassword.value.trim();
+
+      // Basic validation
+      if (!current || !newPass || !confirm) {
+        showToast('Please fill in all password fields', 'error');
+        return;
+      }
+
+      if (newPass.length < 6) {
+        showToast('New password must be at least 6 characters', 'error');
+        return;
+      }
+
+      if (newPass !== confirm) {
+        showToast('New password and confirm password do not match', 'error');
+        return;
+      }
+
+      // Call API or show success (for now just alert)
+      showToast('Password updated successfully!', 'success');
+
+      // Clear inputs
+      currentPassword.value = '';
+      newPassword.value = '';
+      confirmPassword.value = '';
+    });
+
+    // Save Payment Settings
+    const savePaymentSettingsBtn = document.getElementById('savePaymentSettings');
+    savePaymentSettingsBtn.addEventListener('click', async () => {
+      // Collect form data
+      const paymentData = {
+        paymentMethods: {
+          pmCreditCard: document.getElementById('pmCreditCard').checked,
+          pmPayPal: document.getElementById('pmPayPal').checked,
+          pmGooglePay: document.getElementById('pmGooglePay').checked,
+          pmApplePay: document.getElementById('pmApplePay').checked,
+          pmCOD: document.getElementById('pmCOD').checked,
+        },
+        paymentGateway: {
+          gatewayProvider: document.getElementById('gatewayProvider').value,
+          gatewayAPIKey: document.getElementById('gatewayAPIKey').value,
+        },
+        shipping: {
+          shippingFlatRate: document.getElementById('shippingFlatRate').value,
+          shippingFreeThreshold: document.getElementById('shippingFreeThreshold').value,
+        },
+      };
+
+      try {
+        const response = await fetch('/api/settings/payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            // Assuming JWT token is stored in localStorage
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: JSON.stringify(paymentData),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          showToast('Payment settings saved successfully!', 'success');
+        } else {
+          showToast(result.message || 'Failed to save payment settings', 'error');
+        }
+      } catch (error) {
+        console.error('Error saving payment settings:', error);
+        showToast('An error occurred while saving settings', 'error');
+      }
+    });
+  </script>
+
+  <!-- Change Password Modal -->
+  <div id="passwordModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-lg w-96 p-6 relative">
+      <h2 class="text-xl font-bold text-amber-900 mb-4 flex items-center gap-2">
+        <i class="fas fa-lock text-amber-600"></i>
+        Change Password
+      </h2>
+      <button onclick="closePasswordModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 text-lg">&times;</button>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Current Password</label>
+          <input type="password" id="currentPassword" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter current password">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">New Password</label>
+          <input type="password" id="newPassword" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter new password">
+        </div>
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Confirm New Password</label>
+          <input type="password" id="confirmPassword" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Confirm new password">
+        </div>
+        <button type="button" id="updatePasswordBtn" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all w-full">
+          Update Password
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toastContainer" class="fixed bottom-6 right-6 flex flex-col gap-3 z-50"></div>
+</body>
+</html>

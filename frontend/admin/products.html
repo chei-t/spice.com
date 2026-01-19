@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spice Haven - Products</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .sidebar { transition: all 0.3s; }
+    a.no-underline { text-decoration: none; }
+    .nav-link.active { background-color: rgba(255, 255, 255, 0.2); color: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+    .product-card { transition: all 0.3s; }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+    .badge { transition: all 0.2s; }
+    .badge:hover { transform: scale(1.05); }
+    .modal { display: none; }
+    .modal.active { display: flex; }
+    .pulse-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 min-h-screen">
+  
+  <div class="flex">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar w-64 bg-gradient-to-b from-amber-900 to-orange-900 min-h-screen p-4 shadow-2xl fixed left-0 top-0 bottom-0 z-50 text-white">
+      <!-- Logo -->
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-2">
+          <img src="img/logo.jpeg" alt="Spice Haven Logo" class="h-8 w-8">
+          <h2 class="text-xl font-bold">Spice Haven</h2>
+        </div>
+      </div>
+      
+      <!-- Navigation -->
+      <nav class="space-y-2">
+        <a href="dashboard.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-th-large w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        
+        <a href="products.html" class="nav-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-box w-5 h-5"></i>
+          <span>Products</span>
+        </a>
+        
+        <a href="flash-sales.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-bolt w-5 h-5"></i>
+          <span>Flash Sales</span>
+        </a>
+        
+        <a href="customers.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-users w-5 h-5"></i>
+          <span>Customers</span>
+        </a>
+        
+        <a href="orders.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-shopping-cart w-5 h-5"></i>
+          <span>Orders</span>
+        </a>
+
+        <a href="messages.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-envelope w-5 h-5"></i>
+          <span>Messages</span>
+          <span id="message-badge" class="ml-auto bg-red-600 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
+        </a>
+        
+        <a href="report.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-chart-pie w-5 h-5"></i>
+          <span>Report</span>
+        </a>
+        
+        <a href="settings.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-cog w-5 h-5"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <!-- User Profile Section at Bottom -->
+      <div class="absolute bottom-6 left-4 right-4">
+        <div class="bg-amber-800 bg-opacity-50 rounded-xl p-4 backdrop-blur-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+              A
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-white">Admin User</p>
+              <p class="text-xs text-amber-200">Online</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 ml-64">
+      <!-- Header -->
+      <header class="bg-white shadow-md border-b border-amber-200 sticky top-0 z-40">
+        <div class="px-8 py-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-2xl font-bold text-amber-900">Products Management</h1>
+              <p class="text-sm text-amber-700">Manage your spice inventory</p>
+            </div>
+            <div class="flex items-center gap-6">
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <div class="w-2 h-2 bg-green-500 rounded-full pulse-dot"></div>
+                <span>Live Updates</span>
+              </div>
+              <button id="previewBtn" onclick="togglePreviewMode()" class="px-4 py-2 bg-blue-500 text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors">
+                <i class="fas fa-eye mr-2"></i>Preview Store
+              </button>
+              <button class="relative">
+                <i class="fas fa-bell text-gray-600 text-xl"></i>
+                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+              </button>
+              <!-- User profile section -->
+              <div class="flex items-center gap-2 cursor-pointer hover:bg-amber-50 px-3 py-2 rounded-lg transition-colors">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=f59e0b&color=fff" class="w-9 h-9 rounded-full shadow-md" alt="User">
+                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="p-8">
+        
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Total Products</p>
+                <p class="text-3xl font-bold text-amber-900">127</p>
+              </div>
+              <div class="bg-gradient-to-br from-amber-400 to-orange-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-box text-white text-2xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Categories</p>
+                <p class="text-3xl font-bold text-amber-900">8</p>
+              </div>
+              <div class="bg-gradient-to-br from-red-400 to-pink-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-tags text-white text-2xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Low Stock</p>
+                <p class="text-3xl font-bold text-amber-900">12</p>
+              </div>
+              <div class="bg-gradient-to-br from-yellow-400 to-amber-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-exclamation-triangle text-white text-2xl"></i>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Out of Stock</p>
+                <p class="text-3xl font-bold text-amber-900">3</p>
+              </div>
+              <div class="bg-gradient-to-br from-orange-400 to-red-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-times-circle text-white text-2xl"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters and Actions -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100 mb-8">
+          <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div class="flex flex-wrap gap-3">
+              <button class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-semibold shadow-md hover:shadow-lg transition-all">
+                All Products
+              </button>
+              <button class="px-4 py-2 bg-amber-100 text-amber-800 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                Spices
+              </button>
+              <button class="px-4 py-2 bg-amber-100 text-amber-800 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                Herbs
+              </button>
+              <button class="px-4 py-2 bg-amber-100 text-amber-800 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                Blends
+              </button>
+              <button class="px-4 py-2 bg-amber-100 text-amber-800 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                Seasonings
+              </button>
+            </div>
+            <div class="flex gap-3">
+              <div class="relative">
+                <input type="text" placeholder="Search products..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 w-64">
+                <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+              </div>
+              <button onclick="openAddModal()" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2">
+                <i class="fas fa-plus"></i>
+                Add Product
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          
+          <!-- Product Card 1 -->
+          <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden border border-amber-100">
+            <div class="relative">
+              <div class="h-48 bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                <img src="img/logo.jpeg" alt="Turmeric Powder" class="h-32 w-32 object-cover rounded-lg">
+              </div>
+              <span class="badge absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">In Stock</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg mb-1">Turmeric Powder</h3>
+                  <p class="text-sm text-gray-600">Spices</p>
+                </div>
+                <span class="text-xl font-bold text-amber-700">$5.80</span>
+              </div>
+              <div class="mb-4">
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-gray-600">Stock:</span>
+                  <span class="font-semibold text-amber-900">245 units</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full" style="width: 75%"></div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="editProduct('Turmeric Powder')" class="flex-1 bg-amber-100 text-amber-800 px-4 py-2 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                  <i class="fas fa-edit mr-1"></i> Edit
+                </button>
+                <button onclick="deleteProduct('Turmeric Powder')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-200 transition-colors" aria-label="Delete Turmeric Powder" title="Delete Turmeric Powder">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Card 2 -->
+          <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden border border-amber-100">
+            <div class="relative">
+              <div class="h-48 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                <img src="img/logo.jpeg" alt="Black Pepper" class="h-32 w-32 object-cover rounded-lg">
+              </div>
+              <span class="badge absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">In Stock</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg mb-1">Black Pepper</h3>
+                  <p class="text-sm text-gray-600">Spices</p>
+                </div>
+                <span class="text-xl font-bold text-amber-700">$7.20</span>
+              </div>
+              <div class="mb-4">
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-gray-600">Stock:</span>
+                  <span class="font-semibold text-amber-900">312 units</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full" style="width: 85%"></div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="editProduct('Black Pepper')" class="flex-1 bg-amber-100 text-amber-800 px-4 py-2 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                  <i class="fas fa-edit mr-1"></i> Edit
+                </button>
+                <button onclick="deleteProduct('Black Pepper')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-200 transition-colors" aria-label="Delete Black Pepper" title="Delete Black Pepper">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Card 3 -->
+          <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden border border-amber-100">
+            <div class="relative">
+              <div class="h-48 bg-gradient-to-br from-orange-100 to-red-100 flex items-center justify-center">
+                <img src="img/logo.jpeg" alt="Cinnamon Sticks" class="h-32 w-32 object-cover rounded-lg">
+              </div>
+              <span class="badge absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">In Stock</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg mb-1">Cinnamon Sticks</h3>
+                  <p class="text-sm text-gray-600">Spices</p>
+                </div>
+                <span class="text-xl font-bold text-amber-700">$6.50</span>
+              </div>
+              <div class="mb-4">
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-gray-600">Stock:</span>
+                  <span class="font-semibold text-amber-900">189 units</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full" style="width: 60%"></div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="editProduct('Cinnamon Sticks')" class="flex-1 bg-amber-100 text-amber-800 px-4 py-2 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                  <i class="fas fa-edit mr-1"></i> Edit
+                </button>
+                <button onclick="deleteProduct('Cinnamon Sticks')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-200 transition-colors" aria-label="Delete Cinnamon Sticks" title="Delete Cinnamon Sticks">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Card 4 -->
+          <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden border border-amber-100">
+            <div class="relative">
+              <div class="h-48 bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
+                <img src="img/logo.jpeg" alt="Cardamom Pods" class="h-32 w-32 object-cover rounded-lg">
+              </div>
+              <span class="badge absolute top-3 right-3 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold">Low Stock</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg mb-1">Cardamom Pods</h3>
+                  <p class="text-sm text-gray-600">Spices</p>
+                </div>
+                <span class="text-xl font-bold text-amber-700">$9.90</span>
+              </div>
+              <div class="mb-4">
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-gray-600">Stock:</span>
+                  <span class="font-semibold text-red-600">45 units</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-yellow-500 to-red-500 h-2 rounded-full" style="width: 25%"></div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="editProduct('Cardamom Pods')" class="flex-1 bg-amber-100 text-amber-800 px-4 py-2 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                  <i class="fas fa-edit mr-1"></i> Edit
+                </button>
+                <button onclick="deleteProduct('Cardamom Pods')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-200 transition-colors" aria-label="Delete Cardamom Pods" title="Delete Cardamom Pods">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Card 5 -->
+          <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden border border-amber-100">
+            <div class="relative">
+              <div class="h-48 bg-gradient-to-br from-amber-100 to-yellow-100 flex items-center justify-center">
+                <img src="img/logo.jpeg" alt="Curry Powder" class="h-32 w-32 object-cover rounded-lg">
+              </div>
+              <span class="badge absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">In Stock</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg mb-1">Curry Powder</h3>
+                  <p class="text-sm text-gray-600">Blends</p>
+                </div>
+                <span class="text-xl font-bold text-amber-700">$6.50</span>
+              </div>
+              <div class="mb-4">
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-gray-600">Stock:</span>
+                  <span class="font-semibold text-amber-900">320 units</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full" style="width: 90%"></div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="editProduct('Curry Powder')" class="flex-1 bg-amber-100 text-amber-800 px-4 py-2 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                  <i class="fas fa-edit mr-1"></i> Edit
+                </button>
+                <button onclick="deleteProduct('Curry Powder')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-200 transition-colors" aria-label="Delete Curry Powder" title="Delete Curry Powder">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Card 6 -->
+          <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden border border-amber-100">
+            <div class="relative">
+              <div class="h-48 bg-gradient-to-br from-red-100 to-pink-100 flex items-center justify-center">
+                <img src="img/logo.jpeg" alt="Paprika" class="h-32 w-32 object-cover rounded-lg">
+              </div>
+              <span class="badge absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">In Stock</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg mb-1">Paprika</h3>
+                  <p class="text-sm text-gray-600">Spices</p>
+                </div>
+                <span class="text-xl font-bold text-amber-700">$5.20</span>
+              </div>
+              <div class="mb-4">
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-gray-600">Stock:</span>
+                  <span class="font-semibold text-amber-900">178 units</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full" style="width: 55%"></div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="editProduct('Paprika')" class="flex-1 bg-amber-100 text-amber-800 px-4 py-2 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                  <i class="fas fa-edit mr-1"></i> Edit
+                </button>
+                <button onclick="deleteProduct('Paprika')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-200 transition-colors" aria-label="Delete Paprika" title="Delete Paprika">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Card 7 -->
+          <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden border border-amber-100">
+            <div class="relative">
+              <div class="h-48 bg-gradient-to-br from-purple-100 to-indigo-100 flex items-center justify-center">
+                <img src="img/logo.jpeg" alt="Clove" class="h-32 w-32 object-cover rounded-lg">
+              </div>
+              <span class="badge absolute top-3 right-3 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">Out of Stock</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg mb-1">Clove</h3>
+                  <p class="text-sm text-gray-600">Herbs</p>
+                </div>
+                <span class="text-xl font-bold text-amber-700">$4.20</span>
+              </div>
+              <div class="mb-4">
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-gray-600">Stock:</span>
+                  <span class="font-semibold text-red-600">0 units</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-red-500 to-red-600 h-2 rounded-full" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="editProduct('Clove')" class="flex-1 bg-amber-100 text-amber-800 px-4 py-2 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                  <i class="fas fa-edit mr-1"></i> Edit
+                </button>
+                <button onclick="deleteProduct('Clove')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-200 transition-colors" aria-label="Delete Clove" title="Delete Clove">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Card 8 -->
+          <div class="product-card bg-white rounded-2xl shadow-lg overflow-hidden border border-amber-100">
+            <div class="relative">
+              <div class="h-48 bg-gradient-to-br from-lime-100 to-green-100 flex items-center justify-center">
+                <img src="img/logo.jpeg" alt="Bay Leaves" class="h-32 w-32 object-cover rounded-lg">
+              </div>
+              <span class="badge absolute top-3 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold">In Stock</span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg mb-1">Bay Leaves</h3>
+                  <p class="text-sm text-gray-600">Herbs</p>
+                </div>
+                <span class="text-xl font-bold text-amber-700">$3.80</span>
+              </div>
+              <div class="mb-4">
+                <div class="flex justify-between text-sm mb-2">
+                  <span class="text-gray-600">Stock:</span>
+                  <span class="font-semibold text-amber-900">156 units</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                  <div class="bg-gradient-to-r from-amber-500 to-orange-500 h-2 rounded-full" style="width: 50%"></div>
+                </div>
+              </div>
+              <div class="flex gap-2">
+                <button onclick="editProduct('Bay Leaves')" class="flex-1 bg-amber-100 text-amber-800 px-4 py-2 rounded-lg font-semibold hover:bg-amber-200 transition-colors">
+                  <i class="fas fa-edit mr-1"></i> Edit
+                </button>
+                <button onclick="deleteProduct('Bay Leaves')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-semibold hover:bg-red-200 transition-colors" aria-label="Delete Bay Leaves" title="Delete Bay Leaves">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- Add Product Modal -->
+  <div id="addModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-gradient-to-r from-amber-500 to-orange-500 p-6 rounded-t-2xl">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold text-white">Add New Product</h2>
+          <button onclick="closeAddModal()" class="text-white hover:text-amber-100 transition-colors">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <form class="p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Product Name</label>
+            <input type="text" name="name" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter product name" required>
+          </div>
+
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Category</label>
+            <select name="category" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+              <option value="">Select category</option>
+              <option value="Spice">Spice</option>
+              <option value="Herb">Herb</option>
+              <option value="Blend">Blend</option>
+              <option value="Seed">Seed</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Price ($)</label>
+            <input type="number" name="price" step="0.01" min="0" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="0.00" required>
+          </div>
+
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Stock Quantity</label>
+            <input type="number" name="stock" min="0" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="0" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Description</label>
+          <textarea name="description" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter product description" required minlength="10"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Product Image</label>
+          <div class="space-y-2">
+            <input type="file" name="image" accept="image/*" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" onchange="previewImage(this, 'addPreview')">
+            <div id="addPreview" class="hidden w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+              <img id="addPreviewImg" class="max-w-full max-h-full object-cover rounded-lg">
+            </div>
+          </div>
+          <p class="text-sm text-gray-500 mt-1">Upload an image file (max 5MB, JPG/PNG/GIF/WebP)</p>
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button type="button" onclick="closeAddModal()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+            <i class="fas fa-plus mr-2"></i>Add Product
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div id="editModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-gradient-to-r from-amber-500 to-orange-500 p-6 rounded-t-2xl">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold text-white">Edit Product</h2>
+          <button onclick="closeEditModal()" class="text-white hover:text-amber-100 transition-colors">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <form class="p-6 space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Product Name</label>
+            <input type="text" name="name" id="editProductName" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+          </div>
+
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Category</label>
+            <select name="category" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+              <option value="">Select category</option>
+              <option value="Spice">Spice</option>
+              <option value="Herb">Herb</option>
+              <option value="Blend">Blend</option>
+              <option value="Seed">Seed</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Price ($)</label>
+            <input type="number" name="price" step="0.01" min="0" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+          </div>
+
+          <div>
+            <label class="block text-gray-700 text-sm font-semibold mb-2">Stock Quantity</label>
+            <input type="number" name="stock" min="0" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Description</label>
+          <textarea name="description" rows="4" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" required minlength="10"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Product Image</label>
+          <div class="space-y-2">
+            <input type="file" name="image" accept="image/*" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" onchange="previewImage(this, 'editPreview')">
+            <div id="editPreview" class="hidden w-32 h-32 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+              <img id="editPreviewImg" class="max-w-full max-h-full object-cover rounded-lg">
+            </div>
+          </div>
+          <p class="text-sm text-gray-500 mt-1">Upload an image file (max 5MB, JPG/PNG/GIF/WebP)</p>
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button type="button" onclick="closeEditModal()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+            <i class="fas fa-save mr-2"></i>Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+      <div class="p-6">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="fas fa-exclamation-triangle text-red-500 text-3xl"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 text-center mb-2">Delete Product?</h2>
+        <p class="text-gray-600 text-center mb-6">Are you sure you want to delete <span id="deleteProductName" class="font-semibold text-amber-900"></span>? This action cannot be undone.</p>
+        
+        <div class="flex gap-3">
+          <button onclick="closeDeleteModal()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button onclick="confirmDelete()" class="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+            <i class="fas fa-trash mr-2"></i>Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openAddModal() {
+      document.getElementById('addModal').classList.add('active');
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').classList.remove('active');
+    }
+
+    function editProduct(productName) {
+      document.getElementById('editProductName').value = productName;
+      document.getElementById('editModal').classList.add('active');
+    }
+
+    function closeEditModal() {
+      document.getElementById('editModal').classList.remove('active');
+    }
+
+    function deleteProduct(productName) {
+      document.getElementById('deleteProductName').textContent = productName;
+      document.getElementById('deleteModal').classList.add('active');
+    }
+
+    function closeDeleteModal() {
+      document.getElementById('deleteModal').classList.remove('active');
+    }
+
+    function confirmDelete() {
+      // Handle delete logic here
+      closeDeleteModal();
+      // Show success message (optional)
+      alert('Product deleted successfully!');
+    }
+
+    function previewImage(input, previewId) {
+      const preview = document.getElementById(previewId);
+      const previewImg = document.getElementById(previewId + 'Img');
+
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          previewImg.src = e.target.result;
+          preview.classList.remove('hidden');
+        };
+        reader.readAsDataURL(input.files[0]);
+      } else {
+        preview.classList.add('hidden');
+      }
+    }
+
+    // Close modals when clicking outside
+    window.onclick = function(event) {
+      const modals = document.querySelectorAll('.modal');
+      modals.forEach(modal => {
+        if (event.target === modal) {
+          modal.classList.remove('active');
+        }
+      });
+    }
+  </script>
+  <script src="js/product.js"></script>
+</body>
+</html>

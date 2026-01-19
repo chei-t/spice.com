@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spice Haven - Messages</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .sidebar { transition: all 0.3s; }
+    a.no-underline { text-decoration: none; }
+    .nav-link.active { background-color: rgba(255, 255, 255, 0.2); color: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+    .message-card { transition: all 0.3s; }
+    .message-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+    .modal { display: none; }
+    .modal.active { display: flex; }
+    tr:hover { background-color: rgba(251, 191, 36, 0.05); }
+    .unread { font-weight: bold; }
+    .unread::after { content: ''; display: inline-block; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; margin-left: 8px; }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 min-h-screen">
+  
+  <div class="flex">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar w-64 bg-gradient-to-b from-amber-900 to-orange-900 min-h-screen p-4 shadow-2xl fixed left-0 top-0 bottom-0 z-50 text-white">
+      <!-- Logo -->
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-2">
+          <img src="img/logo.jpeg" alt="Spice Haven Logo" class="h-8 w-8">
+          <h2 class="text-xl font-bold">Spice Haven</h2>
+        </div>
+      </div>
+      
+      <!-- Navigation -->
+      <nav class="space-y-2">
+        <a href="dashboard.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-th-large w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        
+        <a href="products.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-box w-5 h-5"></i>
+          <span>Products</span>
+        </a>
+        
+        <a href="flash-sales.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-bolt w-5 h-5"></i>
+          <span>Flash Sales</span>
+        </a>
+        
+        <a href="customers.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-users w-5 h-5"></i>
+          <span>Customers</span>
+        </a>
+        
+        <a href="orders.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-shopping-cart w-5 h-5"></i>
+          <span>Orders</span>
+        </a>
+
+        <a href="messages.html" class="nav-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-envelope w-5 h-5"></i>
+          <span>Messages</span>
+          <span id="message-badge" class="ml-auto bg-red-600 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
+        </a>
+
+        <a href="report.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-chart-pie w-5 h-5"></i>
+          <span>Report</span>
+        </a>
+        
+        <a href="settings.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-cog w-5 h-5"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <!-- User Profile Section at Bottom -->
+      <div class="absolute bottom-6 left-4 right-4">
+        <div class="bg-amber-800 bg-opacity-50 rounded-xl p-4 backdrop-blur-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+              A
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-white">Admin User</p>
+              <p class="text-xs text-amber-200">Online</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 ml-64">
+      <!-- Header -->
+      <header class="bg-white shadow-md border-b border-amber-200 sticky top-0 z-40">
+        <div class="px-8 py-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-2xl font-bold text-amber-900">Message Management</h1>
+              <p class="text-sm text-amber-700">Handle customer inquiries and support tickets</p>
+            </div>
+            <div class="flex items-center gap-6">
+              <button class="relative" aria-label="Notifications" title="Notifications">
+                <i class="fas fa-bell text-gray-600 text-xl"></i>
+                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+              </button>
+              <!-- User profile section -->
+              <div class="flex items-center gap-2 cursor-pointer hover:bg-amber-50 px-3 py-2 rounded-lg transition-colors">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=f59e0b&color=fff" class="w-9 h-9 rounded-full shadow-md" alt="User">
+                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="p-8">
+        
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Total Messages</p>
+                <p class="text-3xl font-bold text-amber-900">247</p>
+              </div>
+              <div class="bg-gradient-to-br from-amber-400 to-orange-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-envelope text-white text-2xl"></i>
+              </div>
+            </div>
+            <p class="text-xs text-green-600 mt-2 flex items-center gap-1">
+              <i class="fas fa-arrow-up"></i> +12 this week
+            </p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Unread</p>
+                <p class="text-3xl font-bold text-amber-900">18</p>
+              </div>
+              <div class="bg-gradient-to-br from-red-400 to-pink-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-envelope-open text-white text-2xl"></i>
+              </div>
+            </div>
+            <p class="text-xs text-red-600 mt-2">Requires attention</p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Resolved</p>
+                <p class="text-3xl font-bold text-amber-900">189</p>
+              </div>
+              <div class="bg-gradient-to-br from-green-400 to-emerald-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-check-circle text-white text-2xl"></i>
+              </div>
+            </div>
+            <p class="text-xs text-green-600 mt-2">76% resolution rate</p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-gray-600 text-sm font-medium mb-1">Pending</p>
+                <p class="text-3xl font-bold text-amber-900">40</p>
+              </div>
+              <div class="bg-gradient-to-br from-yellow-400 to-amber-500 p-4 rounded-xl shadow-lg">
+                <i class="fas fa-clock text-white text-2xl"></i>
+              </div>
+            </div>
+            <p class="text-xs text-yellow-600 mt-2">Avg response: 2h</p>
+          </div>
+        </div>
+
+        <!-- Recent Messages -->
+        <div class="mb-8">
+          <h3 class="text-xl font-bold text-amber-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-envelope text-amber-600"></i>
+            Recent Messages
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Message Card 1 -->
+            <div class="message-card bg-white rounded-2xl shadow-lg p-6 border-l-4 border-red-500">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg unread">Order Issue</h3>
+                  <p class="text-sm text-gray-600">2 hours ago</p>
+                </div>
+                <span class="px-3 py-1 bg-red-100 text-red-700 rounded-full text-xs font-bold">Unread</span>
+              </div>
+              
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://ui-avatars.com/api/?name=Jane+Mitchell&background=f59e0b&color=fff" class="w-10 h-10 rounded-full shadow" alt="Jane Mitchell">
+                <div>
+                  <p class="font-semibold text-gray-900">Jane Mitchell</p>
+                  <p class="text-xs text-gray-600">jane.m@example.com</p>
+                </div>
+              </div>
+
+              <div class="bg-amber-50 p-3 rounded-lg mb-4">
+                <p class="text-sm text-gray-700">I received the wrong spices in my order. Can you help me with this?</p>
+              </div>
+
+              <div class="flex gap-2">
+                <button onclick="viewMessage('MSG-001')" title="View and Reply to Message" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all text-sm">
+                  View & Reply
+                </button>
+                <button onclick="markAsRead('MSG-001')" title="Mark as Read" aria-label="Mark as Read" class="bg-green-100 text-green-600 px-4 py-2 rounded-lg font-semibold hover:bg-green-200 transition-colors text-sm">
+                  <i class="fas fa-check"></i>
+                  <span class="sr-only">Mark as Read</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Message Card 2 -->
+            <div class="message-card bg-white rounded-2xl shadow-lg p-6 border-l-4 border-yellow-500">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg">Product Question</h3>
+                  <p class="text-sm text-gray-600">5 hours ago</p>
+                </div>
+                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">Pending</span>
+              </div>
+              
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://ui-avatars.com/api/?name=David+Lee&background=ef4444&color=fff" class="w-10 h-10 rounded-full shadow" alt="David Lee">
+                <div>
+                  <p class="font-semibold text-gray-900">David Lee</p>
+                  <p class="text-xs text-gray-600">david.l@example.com</p>
+                </div>
+              </div>
+
+              <div class="bg-amber-50 p-3 rounded-lg mb-4">
+                <p class="text-sm text-gray-700">Is your turmeric organic? I need it for my recipes.</p>
+              </div>
+
+              <div class="flex gap-2">
+                <button onclick="viewMessage('MSG-002')" title="View and Reply to Message" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all text-sm">
+                  View & Reply
+                </button>
+                <button onclick="markAsRead('MSG-002')" title="Mark as Read" aria-label="Mark as Read" class="bg-green-100 text-green-600 px-4 py-2 rounded-lg font-semibold hover:bg-green-200 transition-colors text-sm">
+                  <i class="fas fa-check"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Message Card 3 -->
+            <div class="message-card bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg">Feedback</h3>
+                  <p class="text-sm text-gray-600">1 day ago</p>
+                </div>
+                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Resolved</span>
+              </div>
+              
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://ui-avatars.com/api/?name=Sarah+Johnson&background=3b82f6&color=fff" class="w-10 h-10 rounded-full shadow" alt="Sarah Johnson">
+                <div>
+                  <p class="font-semibold text-gray-900">Sarah Johnson</p>
+                  <p class="text-xs text-gray-600">sarah.j@example.com</p>
+                </div>
+              </div>
+
+              <div class="bg-amber-50 p-3 rounded-lg mb-4">
+                <p class="text-sm text-gray-700">Great service! The spices arrived quickly and are fresh.</p>
+              </div>
+
+              <div class="flex gap-2">
+                <button onclick="viewMessage('MSG-003')" title="View Message Details" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all text-sm">
+                  View Details
+                </button>
+                <button onclick="archiveMessage('MSG-003')" title="Archive Message" aria-label="Archive Message" class="bg-gray-100 text-gray-600 px-4 py-2 rounded-lg font-semibold hover:bg-gray-200 transition-colors text-sm">
+                  <i class="fas fa-archive"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- All Messages Table -->
+        <div class="bg-white rounded-2xl shadow-lg border border-amber-100 overflow-hidden">
+          <div class="p-6 border-b border-amber-100">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h3 class="text-xl font-bold text-amber-900">All Messages</h3>
+                <p class="text-sm text-gray-600">Complete message history</p>
+              </div>
+              <div class="flex gap-3 w-full md:w-auto flex-wrap">
+                <!-- Search -->
+                <div class="relative flex-1 md:flex-initial">
+                  <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                  <input type="text" id="searchMessages" placeholder="Search messages..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 w-full md:w-64">
+                </div>
+                <!-- Filter by Status -->
+                <select id="filterStatus" aria-label="Filter by status" title="Filter by status" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500">
+                  <option value="">All Status</option>
+                  <option value="Unread">Unread</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Resolved">Resolved</option>
+                  <option value="Archived">Archived</option>
+                </select>
+                <!-- New Message -->
+                <button onclick="openComposeModal()" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all">
+                  <i class="fas fa-plus mr-2"></i>New Message
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Messages Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-amber-50">
+                <tr>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider">
+                    Sender
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider">
+                    Subject
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              
+              <tbody id="messagesTableBody" class="bg-white divide-y divide-gray-200"></tbody>
+              
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="p-6 border-t border-amber-100">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+              <p class="text-sm text-gray-600">
+                Showing <span id="showingStart">1</span> to <span id="showingEnd">10</span> of <span id="totalMessages">25</span> messages
+              </p>
+              <div class="flex gap-2">
+                <button onclick="previousPage()" id="prevBtn" aria-label="Previous page" title="Previous page" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="px-4 py-2 bg-amber-500 text-white rounded-lg font-semibold">1</button>
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">2</button>
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">3</button>
+                <button onclick="nextPage()" id="nextBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- View Message Modal -->
+  <div id="viewModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-gradient-to-r from-amber-500 to-orange-500 p-6 rounded-t-2xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+              <i class="fas fa-envelope"></i>
+              Message Details
+            </h2>
+            <p class="text-amber-100 text-sm">From: Jane Mitchell</p>
+          </div>
+          <button onclick="closeViewModal()" class="text-white hover:text-amber-100 transition-colors">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-6 space-y-6">
+        <!-- Message Header -->
+        <div class="bg-amber-50 p-4 rounded-lg">
+          <div class="flex items-center gap-4 mb-3">
+            <img src="https://ui-avatars.com/api/?name=Jane+Mitchell&background=f59e0b&color=fff" class="w-16 h-16 rounded-full shadow-lg" alt="Jane Mitchell">
+            <div>
+              <p class="font-bold text-gray-900 text-lg">Jane Mitchell</p>
+              <p class="text-sm text-gray-600">jane.m@example.com</p>
+              <p class="text-sm text-gray-600">Sent: Oct 27, 2024 - 2:30 PM</p>
+            </div>
+          </div>
+          <h3 class="font-bold text-amber-900 text-xl mb-2">Order Issue</h3>
+          <p class="text-gray-700">I received the wrong spices in my order #ORD-3421. I ordered turmeric and black pepper, but got cinnamon sticks instead. Can you please help me resolve this issue? I need the correct spices for my cooking class tomorrow.</p>
+        </div>
+
+        <!-- Reply Section -->
+        <div>
+          <h3 class="font-bold text-amber-900 text-lg mb-3 flex items-center gap-2">
+            <i class="fas fa-reply text-amber-600"></i>
+            Reply
+          </h3>
+          <form class="space-y-4">
+            <div>
+              <label class="block text-gray-700 text-sm font-semibold mb-2">Your Response</label>
+              <textarea rows="6" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Type your reply here...">Dear Jane,
+
+            Thank you for reaching out about your order #ORD-3421. I'm sorry to hear that you received the wrong spices. This is unacceptable, and I apologize for the inconvenience.
+
+            I've reviewed your order and confirmed that you should have received turmeric powder and black pepper. I've already processed a replacement shipment that will be sent out today via express delivery. You should receive it by tomorrow morning.
+
+            In the meantime, if you need any alternative suggestions for your cooking class, please let me know. We're committed to providing the highest quality spices and service.
+
+            Best regards,
+            Spice Haven Support Team</textarea>
+            </div>
+            <div class="flex gap-3">
+              <button type="button" onclick="closeViewModal()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+                Cancel
+              </button>
+              <button type="submit" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+                <i class="fas fa-paper-plane mr-2"></i>Send Reply
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="flex gap-3 pt-4 border-t border-amber-200">
+          <button onclick="markAsResolved()" title="Mark Message as Resolved" class="flex-1 bg-green-100 text-green-700 px-6 py-3 rounded-lg font-semibold hover:bg-green-200 transition-colors">
+            <i class="fas fa-check-circle mr-2"></i>Mark as Resolved
+          </button>
+          <button onclick="archiveMessage()" title="Archive Message" class="flex-1 bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
+            <i class="fas fa-archive mr-2"></i>Archive
+          </button>
+          <button onclick="deleteMessage()" title="Delete Message" aria-label="Delete Message" class="bg-red-100 text-red-600 px-6 py-3 rounded-lg font-semibold hover:bg-red-200 transition-colors">
+            <i class="fas fa-trash mr-2"></i>Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compose Message Modal -->
+  <div id="composeModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-gradient-to-r from-green-500 to-emerald-500 p-6 rounded-t-2xl">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold text-white">Compose New Message</h2>
+          <button onclick="closeComposeModal()" class="text-white hover:text-green-100 transition-colors">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <form class="p-6 space-y-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Recipient</label>
+          <select class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+            <option>Select recipient</option>
+            <option>All Customers</option>
+            <option>Premium Customers</option>
+            <option>Individual Customer</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Subject</label>
+          <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter subject">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Message</label>
+          <textarea rows="8" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Type your message here..."></textarea>
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button type="button" onclick="closeComposeModal()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button type="submit" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+            <i class="fas fa-paper-plane mr-2"></i>Send Message
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+const API_BASE_URL = 'http://localhost:5000/api';
+let currentMessageId = null;
+let messages = [];
+
+// Pagination
+let currentPage = 1;
+let rowsPerPage = 10;
+
+// ------------------ AUTHENTICATION ------------------
+function getAuthHeaders() {
+  const token = localStorage.getItem('token');
+  if (!token) {
+    alert('Authentication required. Please log in.');
+    window.location.href = '../user/login.html';
+    return null;
+  }
+  return {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`
+  };
+}
+
+// ------------------ API CALLS ------------------
+async function loadMessagesFromServer() {
+  try {
+    const headers = getAuthHeaders();
+    if (!headers) return;
+
+    const response = await fetch(`${API_BASE_URL}/messages`, {
+      headers: headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const backendMessages = await response.json();
+
+    // Map backend data to frontend format
+    messages = backendMessages.map(msg => ({
+      id: msg._id,
+      sender: msg.name,
+      email: msg.email,
+      avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(msg.name)}&background=f59e0b&color=fff`,
+      subject: msg.inquiry,
+      message: msg.message,
+      reply: msg.reply,
+      date: new Date(msg.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      status: getStatusFromBackend(msg.isRead, msg.reply),
+      badge: getBadgeFromStatus(getStatusFromBackend(msg.isRead, msg.reply)),
+      isRead: msg.isRead
+    }));
+
+    renderMessages();
+    updateStats();
+    updateMessageBadge();
+  } catch (error) {
+    console.error('Error loading messages:', error);
+    alert('Failed to load messages. Please check your connection and try again.');
+  }
+}
+
+function getStatusFromBackend(isRead, reply) {
+  if (!isRead) return 'Unread';
+  if (reply) return 'Resolved';
+  return 'Pending';
+}
+
+function getBadgeFromStatus(status) {
+  switch (status) {
+    case 'Unread': return 'bg-red-100 text-red-700';
+    case 'Pending': return 'bg-yellow-100 text-yellow-700';
+    case 'Resolved': return 'bg-green-100 text-green-700';
+    default: return 'bg-gray-100 text-gray-700';
+  }
+}
+
+async function markAsRead(id) {
+  try {
+    const headers = getAuthHeaders();
+    if (!headers) return;
+
+    const response = await fetch(`${API_BASE_URL}/messages/${id}/read`, {
+      method: 'PATCH',
+      headers: headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    await loadMessagesFromServer(); // Reload messages
+  } catch (error) {
+    console.error('Error marking as read:', error);
+    alert('Failed to mark message as read.');
+  }
+}
+
+async function sendReply(id, replyText) {
+  try {
+    const headers = getAuthHeaders();
+    if (!headers) return;
+
+    const response = await fetch(`${API_BASE_URL}/messages/${id}/reply`, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({ reply: replyText })
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    closeViewModal();
+    await loadMessagesFromServer(); // Reload messages
+    alert('Reply sent successfully!');
+  } catch (error) {
+    console.error('Error sending reply:', error);
+    alert('Failed to send reply.');
+  }
+}
+
+async function deleteMessage(id) {
+  if (!confirm("Are you sure you want to delete this message?")) return;
+
+  try {
+    const headers = getAuthHeaders();
+    if (!headers) return;
+
+    const response = await fetch(`${API_BASE_URL}/messages/${id}`, {
+      method: 'DELETE',
+      headers: headers
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    await loadMessagesFromServer(); // Reload messages
+    alert('Message deleted successfully.');
+  } catch (error) {
+    console.error('Error deleting message:', error);
+    alert('Failed to delete message.');
+  }
+}
+
+// ------------------ RENDER TABLE ------------------
+function renderMessages() {
+  const tbody = document.getElementById("messagesTableBody");
+  tbody.innerHTML = "";
+
+  let filtered = filterMessages();
+  let paginated = paginate(filtered);
+
+  paginated.forEach(message => {
+    tbody.innerHTML += `
+      <tr class="hover:bg-gray-50 ${message.status === 'Unread' ? 'unread' : ''}">
+        <td class="py-3 px-3">
+          <div class="flex items-center gap-3">
+            <img src="${message.avatar}" class="w-9 h-9 rounded-full">
+            <div>
+              <p class="font-semibold text-amber-900">${message.sender}</p>
+              <p class="text-xs text-gray-500">${message.email}</p>
+            </div>
+          </div>
+        </td>
+        <td class="px-3 font-semibold text-amber-900">${message.subject}</td>
+        <td class="px-3 text-gray-600">${message.date}</td>
+        <td class="px-3">
+          <span class="px-3 py-1 rounded-full text-xs ${message.badge}">
+            ${message.status}
+          </span>
+        </td>
+        <td class="px-3">
+          <div class="flex items-center gap-2">
+            <button onclick="viewMessage('${message.id}')" title="View Message" aria-label="View Message" class="w-8 h-8 flex items-center justify-center rounded-full bg-amber-50 hover:bg-amber-100 text-amber-700 transition">
+              <i class="fas fa-eye text-sm"></i>
+              <span class="sr-only">View Message</span>
+            </button>
+            <button onclick="replyMessage('${message.id}')" title="Reply to Message" aria-label="Reply to Message" class="w-8 h-8 flex items-center justify-center rounded-full bg-blue-50 hover:bg-blue-100 text-blue-600 transition">
+              <i class="fas fa-reply text-sm"></i>
+              <span class="sr-only">Reply to Message</span>
+            </button>
+            <button onclick="deleteMessage('${message.id}')" title="Delete Message" aria-label="Delete Message" class="w-8 h-8 flex items-center justify-center rounded-full bg-red-50 hover:bg-red-100 text-red-600 transition">
+              <i class="fas fa-trash text-sm"></i>
+              <span class="sr-only">Delete Message</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  updatePaginationDisplay(filtered.length);
+}
+
+// ------------------ SEARCH + FILTER ------------------
+function filterMessages() {
+  let search = document.getElementById("searchMessages")?.value.toLowerCase() || "";
+  let status = document.getElementById("filterStatus")?.value || "";
+
+  return messages.filter(message => {
+    let matchText = message.sender.toLowerCase().includes(search) ||
+                    message.subject.toLowerCase().includes(search) ||
+                    message.email.toLowerCase().includes(search);
+    let matchStatus = status === "" || message.status === status;
+    return matchText && matchStatus;
+  });
+}
+
+// ------------------ PAGINATION ------------------
+function paginate(data) {
+  let start = (currentPage - 1) * rowsPerPage;
+  let end = start + rowsPerPage;
+  return data.slice(start, end);
+}
+
+function previousPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    renderMessages();
+  }
+}
+
+function nextPage() {
+  let total = filterMessages().length;
+  if (currentPage < Math.ceil(total / rowsPerPage)) {
+    currentPage++;
+    renderMessages();
+  }
+}
+
+function updatePaginationDisplay(total) {
+  document.getElementById("totalMessages").textContent = total;
+  let start = (currentPage - 1) * rowsPerPage + 1;
+  let end = Math.min(currentPage * rowsPerPage, total);
+  document.getElementById("showingStart").textContent = total === 0 ? 0 : start;
+  document.getElementById("showingEnd").textContent = end;
+}
+
+// ------------------ UPDATE STATS ------------------
+function updateStats() {
+  const total = messages.length;
+  const unread = messages.filter(m => m.status === 'Unread').length;
+  const resolved = messages.filter(m => m.status === 'Resolved').length;
+  const pending = messages.filter(m => m.status === 'Pending').length;
+
+  document.querySelector('.grid.grid-cols-1.md\\:grid-cols-4 .bg-white:nth-child(1) p:nth-child(2)').textContent = total;
+  document.querySelector('.grid.grid-cols-1.md\\:grid-cols-4 .bg-white:nth-child(2) p:nth-child(2)').textContent = unread;
+  document.querySelector('.grid.grid-cols-1.md\\:grid-cols-4 .bg-white:nth-child(3) p:nth-child(2)').textContent = resolved;
+  document.querySelector('.grid.grid-cols-1.md\\:grid-cols-4 .bg-white:nth-child(4) p:nth-child(2)').textContent = pending;
+}
+
+// ------------------ EVENT LISTENERS ------------------
+document.getElementById("searchMessages")?.addEventListener("input", renderMessages);
+document.getElementById("filterStatus")?.addEventListener("change", () => {
+  currentPage = 1;
+  renderMessages();
+});
+
+// ------------------ MODAL FUNCTIONS ------------------
+function viewMessage(id) {
+  const message = messages.find(m => m.id === id);
+  if (!message) return;
+
+  // Populate modal with message data
+  document.querySelector('#viewModal .text-white').textContent = `From: ${message.sender}`;
+  document.querySelector('#viewModal img').src = message.avatar;
+  document.querySelector('#viewModal .font-bold.text-gray-900.text-lg').textContent = message.sender;
+  document.querySelector('#viewModal .text-sm.text-gray-600').textContent = message.email;
+  document.querySelector('#viewModal .text-sm.text-gray-600').nextElementSibling.textContent = `Sent: ${message.date}`;
+  document.querySelector('#viewModal .font-bold.text-amber-900.text-xl').textContent = message.subject;
+  document.querySelector('#viewModal .text-gray-700').textContent = message.message;
+
+  // Populate reply textarea if there's an existing reply
+  const replyTextarea = document.querySelector('#viewModal textarea');
+  replyTextarea.value = message.reply || '';
+
+  currentMessageId = id;
+  document.getElementById("viewModal").classList.add("active");
+}
+
+function closeViewModal() {
+  document.getElementById("viewModal").classList.remove("active");
+  currentMessageId = null;
+}
+
+function openComposeModal() {
+  document.getElementById("composeModal").classList.add("active");
+}
+
+function closeComposeModal() {
+  document.getElementById("composeModal").classList.remove("active");
+}
+
+function replyMessage(id) {
+  viewMessage(id); // Reuse view modal for reply
+}
+
+// Handle form submission for reply
+document.querySelector('#viewModal form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const replyText = document.querySelector('#viewModal textarea').value.trim();
+  if (replyText && currentMessageId) {
+    sendReply(currentMessageId, replyText);
+  } else {
+    alert('Please enter a reply.');
+  }
+});
+
+function markAsResolved() {
+  if (currentMessageId) {
+    // Since marking as resolved is handled by sending a reply, we can just close the modal
+    closeViewModal();
+  }
+}
+
+function archiveMessage(id) {
+  // Archive is not implemented in backend, so we'll treat it as delete for now
+  deleteMessage(id);
+}
+
+// Close modals when clicking outside
+window.onclick = function(event) {
+  const modals = document.querySelectorAll('.modal');
+  modals.forEach(modal => {
+    if (event.target === modal) {
+      modal.classList.remove('active');
+    }
+  });
+}
+
+// Update message badge
+function updateMessageBadge() {
+  const unreadCount = messages.filter(m => m.status === 'Unread').length;
+  const badge = document.getElementById('message-badge');
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount;
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  loadMessagesFromServer();
+});

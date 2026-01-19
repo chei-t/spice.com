@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spice Haven - Orders</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .sidebar { transition: all 0.3s; }
+    a.no-underline { text-decoration: none; }
+    .nav-link.active { background-color: rgba(255, 255, 255, 0.2); color: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+    .order-card { transition: all 0.3s; }
+    .order-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.15); }
+    .modal { display: none; }
+    .modal.active { display: flex; }
+    tr:hover { background-color: rgba(251, 191, 36, 0.05); }
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 30px;
+      bottom: -10px;
+      width: 2px;
+      background: #fbbf24;
+    }
+    .timeline-item:last-child::before {
+      display: none;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 min-h-screen">
+  
+  <div class="flex">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar w-64 bg-gradient-to-b from-amber-900 to-orange-900 min-h-screen p-4 shadow-2xl fixed left-0 top-0 bottom-0 z-50 text-white">
+      <!-- Logo -->
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-2">
+          <img src="img/logo.jpeg" alt="Spice Haven Logo" class="h-8 w-8">
+          <h2 class="text-xl font-bold">Spice Haven</h2>
+        </div>
+      </div>
+      
+      <!-- Navigation -->
+      <nav class="space-y-2">
+        <a href="dashboard.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-th-large w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        
+        <a href="products.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-box w-5 h-5"></i>
+          <span>Products</span>
+        </a>
+        
+        <a href="flash-sales.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-bolt w-5 h-5"></i>
+          <span>Flash Sales</span>
+        </a>
+        
+        <a href="customers.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-users w-5 h-5"></i>
+          <span>Customers</span>
+        </a>
+        
+        <a href="orders.html" class="nav-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-shopping-cart w-5 h-5"></i>
+          <span>Orders</span>
+        </a>
+
+        <a href="messages.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-envelope w-5 h-5"></i>
+          <span>Messages</span>
+          <span id="message-badge" class="ml-auto bg-red-600 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
+        </a>
+
+        <a href="report.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-chart-pie w-5 h-5"></i>
+          <span>Report</span>
+        </a>
+        
+        <a href="settings.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-cog w-5 h-5"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <!-- User Profile Section at Bottom -->
+      <div class="absolute bottom-6 left-4 right-4">
+        <div class="bg-amber-800 bg-opacity-50 rounded-xl p-4 backdrop-blur-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+              A
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-white">Admin User</p>
+              <p class="text-xs text-amber-200">Online</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 ml-64">
+      <!-- Header -->
+      <header class="bg-white shadow-md border-b border-amber-200 sticky top-0 z-40">
+        <div class="px-8 py-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-2xl font-bold text-amber-900">Order Management</h1>
+              <p class="text-sm text-amber-700">Track and manage all orders</p>
+            </div>
+            <div class="flex items-center gap-6">
+              <button class="relative">
+                <i class="fas fa-bell text-gray-600 text-xl"></i>
+                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+              </button>
+              <!-- User profile section -->
+              <div class="flex items-center gap-2 cursor-pointer hover:bg-amber-50 px-3 py-2 rounded-lg transition-colors">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=f59e0b&color=fff" class="w-9 h-9 rounded-full shadow-md" alt="User">
+                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="p-8">
+        
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between mb-2">
+              <div class="bg-gradient-to-br from-blue-400 to-cyan-500 p-3 rounded-xl shadow-lg">
+                <i class="fas fa-shopping-cart text-white text-xl"></i>
+              </div>
+            </div>
+            <p class="text-gray-600 text-sm font-medium mb-1">Total Orders</p>
+            <p class="text-3xl font-bold text-amber-900">1,209</p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between mb-2">
+              <div class="bg-gradient-to-br from-green-400 to-emerald-500 p-3 rounded-xl shadow-lg">
+                <i class="fas fa-check-circle text-white text-xl"></i>
+              </div>
+            </div>
+            <p class="text-gray-600 text-sm font-medium mb-1">Delivered</p>
+            <p class="text-3xl font-bold text-green-600">654</p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between mb-2">
+              <div class="bg-gradient-to-br from-amber-400 to-orange-500 p-3 rounded-xl shadow-lg">
+                <i class="fas fa-sync-alt text-white text-xl"></i>
+              </div>
+            </div>
+            <p class="text-gray-600 text-sm font-medium mb-1">Processing</p>
+            <p class="text-3xl font-bold text-blue-600">298</p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between mb-2">
+              <div class="bg-gradient-to-br from-yellow-400 to-amber-500 p-3 rounded-xl shadow-lg">
+                <i class="fas fa-clock text-white text-xl"></i>
+              </div>
+            </div>
+            <p class="text-gray-600 text-sm font-medium mb-1">Pending</p>
+            <p class="text-3xl font-bold text-yellow-600">187</p>
+          </div>
+
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between mb-2">
+              <div class="bg-gradient-to-br from-red-400 to-pink-500 p-3 rounded-xl shadow-lg">
+                <i class="fas fa-times-circle text-white text-xl"></i>
+              </div>
+            </div>
+            <p class="text-gray-600 text-sm font-medium mb-1">Cancelled</p>
+            <p class="text-3xl font-bold text-red-600">70</p>
+          </div>
+        </div>
+
+        <!-- Recent Orders Cards -->
+        <div class="mb-8">
+          <h3 class="text-xl font-bold text-amber-900 mb-4 flex items-center gap-2">
+            <i class="fas fa-bell text-amber-600"></i>
+            Recent Orders
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Order Card 1 -->
+            <div class="order-card bg-white rounded-2xl shadow-lg p-6 border-l-4 border-green-500">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg">#ORD-3421</h3>
+                  <p class="text-sm text-gray-600">2 hours ago</p>
+                </div>
+                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">Delivered</span>
+              </div>
+              
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://ui-avatars.com/api/?name=Jane+Mitchell&background=f59e0b&color=fff" class="w-10 h-10 rounded-full shadow" alt="Jane Mitchell">
+                <div>
+                  <p class="font-semibold text-gray-900">Jane Mitchell</p>
+                  <p class="text-xs text-gray-600">jane.m@example.com</p>
+                </div>
+              </div>
+
+              <div class="bg-amber-50 p-3 rounded-lg mb-4">
+                <p class="text-sm text-gray-700 mb-1">Items: Turmeric, Black Pepper</p>
+                <p class="text-sm text-gray-700">Quantity: 3 items</p>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-2xl font-bold text-amber-700">$89.90</span>
+                <button onclick="viewOrder('ORD-3421')" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all text-sm">
+                  View Details
+                </button>
+              </div>
+            </div>
+
+            <!-- Order Card 2 -->
+            <div class="order-card bg-white rounded-2xl shadow-lg p-6 border-l-4 border-yellow-500">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg">#ORD-3390</h3>
+                  <p class="text-sm text-gray-600">5 hours ago</p>
+                </div>
+                <span class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-full text-xs font-bold">Pending</span>
+              </div>
+              
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://ui-avatars.com/api/?name=David+Lee&background=ef4444&color=fff" class="w-10 h-10 rounded-full shadow" alt="David Lee">
+                <div>
+                  <p class="font-semibold text-gray-900">David Lee</p>
+                  <p class="text-xs text-gray-600">david.l@example.com</p>
+                </div>
+              </div>
+
+              <div class="bg-amber-50 p-3 rounded-lg mb-4">
+                <p class="text-sm text-gray-700 mb-1">Items: Cinnamon Sticks</p>
+                <p class="text-sm text-gray-700">Quantity: 2 items</p>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-2xl font-bold text-amber-700">$42.50</span>
+                <button onclick="viewOrder('ORD-3390')" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all text-sm">
+                  View Details
+                </button>
+              </div>
+            </div>
+
+            <!-- Order Card 3 -->
+            <div class="order-card bg-white rounded-2xl shadow-lg p-6 border-l-4 border-blue-500">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h3 class="font-bold text-amber-900 text-lg">#ORD-3375</h3>
+                  <p class="text-sm text-gray-600">1 day ago</p>
+                </div>
+                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">Processing</span>
+              </div>
+              
+              <div class="flex items-center gap-3 mb-4">
+                <img src="https://ui-avatars.com/api/?name=Sarah+Johnson&background=3b82f6&color=fff" class="w-10 h-10 rounded-full shadow" alt="Sarah Johnson">
+                <div>
+                  <p class="font-semibold text-gray-900">Sarah Johnson</p>
+                  <p class="text-xs text-gray-600">sarah.j@example.com</p>
+                </div>
+              </div>
+
+              <div class="bg-amber-50 p-3 rounded-lg mb-4">
+                <p class="text-sm text-gray-700 mb-1">Items: Cardamom Pods, Curry</p>
+                <p class="text-sm text-gray-700">Quantity: 5 items</p>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <span class="text-2xl font-bold text-amber-700">$156.20</span>
+                <button onclick="viewOrder('ORD-3375')" class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-2 rounded-lg font-semibold hover:shadow-lg transition-all text-sm">
+                  View Details
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- All Orders Table -->
+        <div class="bg-white rounded-2xl shadow-lg border border-amber-100 overflow-hidden">
+          <div class="p-6 border-b border-amber-100">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h3 class="text-xl font-bold text-amber-900">All Orders</h3>
+                <p class="text-sm text-gray-600">Complete order history</p>
+              </div>
+              <div class="flex gap-3 w-full md:w-auto flex-wrap">
+                <!-- Search -->
+                <div class="relative flex-1 md:flex-initial">
+                  <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                  <input type="text" id="searchOrders" placeholder="Search orders..." class="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 w-full md:w-64">
+                </div>
+                <!-- Filter by Status -->
+                <select id="filterStatus" aria-label="Filter by status" title="Filter by status" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500">
+                  <option value="">All Status</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+                <!-- Export -->
+                <button onclick="exportOrders()" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg font-semibold hover:shadow-lg transition-all">
+                  <i class="fas fa-download mr-2"></i>Export
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Orders Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-amber-50">
+                <tr>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider cursor-pointer hover:bg-amber-100" onclick="sortTable('orderId')">
+                    Order ID <i class="fas fa-sort ml-1 text-amber-600"></i>
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider cursor-pointer hover:bg-amber-100" onclick="sortTable('customer')">
+                    Customer <i class="fas fa-sort ml-1 text-amber-600"></i>
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider cursor-pointer hover:bg-amber-100" onclick="sortTable('date')">
+                    Date <i class="fas fa-sort ml-1 text-amber-600"></i>
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider">
+                    Items
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider cursor-pointer hover:bg-amber-100" onclick="sortTable('total')">
+                    Total <i class="fas fa-sort ml-1 text-amber-600"></i>
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider cursor-pointer hover:bg-amber-100" onclick="sortTable('status')">
+                    Status <i class="fas fa-sort ml-1 text-amber-600"></i>
+                  </th>
+                  <th class="px-6 py-4 text-left text-xs font-bold text-amber-900 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              
+              <tbody id="ordersTableBody" class="bg-white divide-y divide-gray-200"></tbody>
+              
+                <!-- Table rows will be populated by JavaScript -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="p-6 border-t border-amber-100">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+              <p class="text-sm text-gray-600">
+                Showing <span id="showingStart">1</span> to <span id="showingEnd">10</span> of <span id="totalOrders">25</span> orders
+              </p>
+              <div class="flex gap-2">
+                <button onclick="previousPage()" id="prevBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="px-4 py-2 bg-amber-500 text-white rounded-lg font-semibold">1</button>
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">2</button>
+                <button class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">3</button>
+                <button onclick="nextPage()" id="nextBtn" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-amber-50 transition-colors">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- View Order Modal -->
+  <div id="viewModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="sticky top-0 bg-gradient-to-r from-amber-500 to-orange-500 p-6 rounded-t-2xl">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+              <i class="fas fa-receipt"></i>
+              Order <span id="viewOrderId">#ORD-3421</span>
+            </h2>
+            <p class="text-amber-100 text-sm">Order Details & Tracking</p>
+          </div>
+          <button onclick="closeViewModal()" class="text-white hover:text-amber-100 transition-colors">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-6 space-y-6">
+        <!-- Order Status -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-green-50 p-4 rounded-lg text-center">
+            <i class="fas fa-check-circle text-green-500 text-3xl mb-2"></i>
+            <p class="text-sm text-gray-600 mb-1">Status</p>
+            <p class="text-lg font-bold text-green-600">Delivered</p>
+          </div>
+          <div class="bg-blue-50 p-4 rounded-lg text-center">
+            <i class="fas fa-calendar text-blue-500 text-3xl mb-2"></i>
+            <p class="text-sm text-gray-600 mb-1">Order Date</p>
+            <p class="text-lg font-bold text-blue-600">Oct 27, 2024</p>
+          </div>
+          <div class="bg-purple-50 p-4 rounded-lg text-center">
+            <i class="fas fa-dollar-sign text-purple-500 text-3xl mb-2"></i>
+            <p class="text-sm text-gray-600 mb-1">Total Amount</p>
+            <p class="text-lg font-bold text-purple-600">$89.90</p>
+          </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div>
+          <h3 class="font-bold text-amber-900 text-lg mb-3 flex items-center gap-2">
+            <i class="fas fa-user text-amber-600"></i>
+            Customer Information
+          </h3>
+          <div class="bg-amber-50 p-4 rounded-lg">
+            <div class="flex items-center gap-4 mb-3">
+              <img src="https://ui-avatars.com/api/?name=Jane+Mitchell&background=f59e0b&color=fff" class="w-16 h-16 rounded-full shadow-lg" alt="Jane Mitchell">
+              <div>
+                <p class="font-bold text-gray-900 text-lg">Jane Mitchell</p>
+                <p class="text-sm text-gray-600">jane.m@example.com</p>
+                <p class="text-sm text-gray-600">+1 234-567-8901</p>
+              </div>
+            </div>
+            <div class="border-t border-amber-200 pt-3">
+              <p class="text-sm text-gray-600 mb-1">Shipping Address:</p>
+              <p class="font-semibold text-gray-900">123 Spice Lane, Flavor Town, CA 90210</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Items -->
+        <div>
+          <h3 class="font-bold text-amber-900 text-lg mb-3 flex items-center gap-2">
+            <i class="fas fa-box-open text-amber-600"></i>
+            Order Items
+          </h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-amber-100 to-orange-100 rounded-lg flex items-center justify-center">
+                  <span class="text-3xl">🧡</span>
+                </div>
+                <div>
+                  <p class="font-bold text-gray-900">Turmeric Powder</p>
+                  <p class="text-sm text-gray-600">Quantity: 2</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-amber-700">$11.60</p>
+                <p class="text-sm text-gray-600">$5.80 each</p>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center">
+                  <span class="text-3xl">⚫</span>
+                </div>
+                <div>
+                  <p class="font-bold text-gray-900">Black Pepper</p>
+                  <p class="text-sm text-gray-600">Quantity: 1</p>
+                </div>
+              </div>
+              <div class="text-right">
+                <p class="font-bold text-amber-700">$7.20</p>
+                <p class="text-sm text-gray-600">$7.20 each</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Summary -->
+        <div>
+          <h3 class="font-bold text-amber-900 text-lg mb-3 flex items-center gap-2">
+            <i class="fas fa-receipt text-amber-600"></i>
+            Order Summary
+          </h3>
+          <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-lg space-y-2">
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-700">Subtotal:</span>
+              <span class="font-semibold text-gray-900">$78.90</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-700">Shipping:</span>
+              <span class="font-semibold text-gray-900">$8.00</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-gray-700">Tax:</span>
+              <span class="font-semibold text-gray-900">$3.00</span>
+            </div>
+            <div class="border-t-2 border-amber-200 pt-2 flex justify-between">
+              <span class="font-bold text-amber-900 text-lg">Total:</span>
+              <span class="font-bold text-amber-700 text-2xl">$89.90</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Timeline -->
+        <div>
+          <h3 class="font-bold text-amber-900 text-lg mb-3 flex items-center gap-2">
+            <i class="fas fa-history text-amber-600"></i>
+            Order Timeline
+          </h3>
+          <div class="space-y-4">
+            <div class="timeline-item relative flex gap-4">
+              <div class="flex-shrink-0 w-4 h-4 bg-green-500 rounded-full mt-1 z-10"></div>
+              <div class="flex-1 pb-6">
+                <p class="font-semibold text-gray-900">Order Delivered</p>
+                <p class="text-sm text-gray-600">Oct 27, 2024 - 2:30 PM</p>
+                <p class="text-xs text-gray-500 mt-1">Package delivered successfully</p>
+              </div>
+            </div>
+
+            <div class="timeline-item relative flex gap-4">
+              <div class="flex-shrink-0 w-4 h-4 bg-blue-500 rounded-full mt-1 z-10"></div>
+              <div class="flex-1 pb-6">
+                <p class="font-semibold text-gray-900">Out for Delivery</p>
+                <p class="text-sm text-gray-600">Oct 27, 2024 - 9:00 AM</p>
+                <p class="text-xs text-gray-500 mt-1">Package is on the way</p>
+              </div>
+            </div>
+
+            <div class="timeline-item relative flex gap-4">
+              <div class="flex-shrink-0 w-4 h-4 bg-yellow-500 rounded-full mt-1 z-10"></div>
+              <div class="flex-1 pb-6">
+                <p class="font-semibold text-gray-900">In Transit</p>
+                <p class="text-sm text-gray-600">Oct 26, 2024 - 3:15 PM</p>
+                <p class="text-xs text-gray-500 mt-1">Package in transit to destination</p>
+              </div>
+            </div>
+
+            <div class="timeline-item relative flex gap-4">
+              <div class="flex-shrink-0 w-4 h-4 bg-purple-500 rounded-full mt-1 z-10"></div>
+              <div class="flex-1 pb-6">
+                <p class="font-semibold text-gray-900">Order Shipped</p>
+                <p class="text-sm text-gray-600">Oct 25, 2024 - 11:45 AM</p>
+                <p class="text-xs text-gray-500 mt-1">Order has been shipped</p>
+              </div>
+            </div>
+
+            <div class="timeline-item relative flex gap-4">
+              <div class="flex-shrink-0 w-4 h-4 bg-amber-500 rounded-full mt-1 z-10"></div>
+              <div class="flex-1">
+                <p class="font-semibold text-gray-900">Order Placed</p>
+                <p class="text-sm text-gray-600">Oct 24, 2024 - 4:20 PM</p>
+                <p class="text-xs text-gray-500 mt-1">Order received and confirmed</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-3 pt-4">
+          <button onclick="printOrder('ORD-3421')" class="flex-1 bg-blue-100 text-blue-700 px-6 py-3 rounded-lg font-semibold hover:bg-blue-200 transition-colors">
+            <i class="fas fa-print mr-2"></i>Print Invoice
+          </button>
+          <button onclick="updateStatus()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+            <i class="fas fa-edit mr-2"></i>Update Status
+          </button>
+          <button onclick="closeViewModal()" class="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Update Status Modal -->
+  <div id="statusModal" class="modal fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4">
+      <div class="bg-gradient-to-r from-green-500 to-emerald-500 p-6 rounded-t-2xl">
+        <div class="flex items-center justify-between">
+          <h2 class="text-2xl font-bold text-white">Update Order Status</h2>
+          <button onclick="closeStatusModal()" class="text-white hover:text-green-100 transition-colors">
+            <i class="fas fa-times text-2xl"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="p-6 space-y-4">
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Order Status</label>
+          <select class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500">
+            <option>Pending</option>
+            <option>Processing</option>
+            <option>Shipped</option>
+            <option>Out for Delivery</option>
+            <option>Delivered</option>
+            <option>Cancelled</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Tracking Number (Optional)</label>
+          <input type="text" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Enter tracking number">
+        </div>
+
+        <div>
+          <label class="block text-gray-700 text-sm font-semibold mb-2">Notes</label>
+          <textarea rows="3" class="w-full border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Add any notes about this status update"></textarea>
+        </div>
+
+        <div class="flex gap-3 pt-4">
+          <button onclick="closeStatusModal()" class="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-semibold hover:bg-gray-300 transition-colors">
+            Cancel
+          </button>
+          <button onclick="confirmStatusUpdate()" class="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all">
+            <i class="fas fa-check mr-2"></i>Update
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ <script>
+// ------------------ TABLE DATA FROM YOUR DESIGN ------------------
+let orders = [
+  {
+    orderId: "ORD-3310",
+    customer: "Linda Perez",
+    avatar: "img/avatar1.png",
+    date: "Jan 7, 2025",
+    items: 4,
+    total: 134.40,
+    status: "Delivered",
+    badge: "bg-green-100 text-green-700"
+  },
+  {
+    orderId: "ORD-3421",
+    customer: "Jane Mitchell",
+    avatar: "img/avatar2.png",
+    date: "Jan 14, 2025",
+    items: 2,
+    total: 89.90,
+    status: "Delivered",
+    badge: "bg-green-100 text-green-700"
+  },
+  {
+    orderId: "ORD-3390",
+    customer: "David Lee",
+    avatar: "img/avatar3.png",
+    date: "Jan 12, 2025",
+    items: 1,
+    total: 42.50,
+    status: "Pending",
+    badge: "bg-yellow-100 text-yellow-700"
+  },
+  {
+    orderId: "ORD-3375",
+    customer: "Sarah Johnson",
+    avatar: "img/avatar4.png",
+    date: "Jan 10, 2025",
+    items: 3,
+    total: 156.20,
+    status: "Processing",
+    badge: "bg-blue-100 text-blue-700"
+  },
+  {
+    orderId: "ORD-3320",
+    customer: "Mark Evans",
+    avatar: "img/avatar5.png",
+    date: "Jan 8, 2025",
+    items: 5,
+    total: 220.75,
+    status: "Cancelled",
+    badge: "bg-red-100 text-red-700"
+  }
+];
+
+// Pagination
+let currentPage = 1;
+let rowsPerPage = 10;
+
+// Sorting
+let sortDirection = 1;
+let currentSortColumn = "";
+
+
+// ------------------ RENDER TABLE ------------------
+function renderOrders() {
+  const tbody = document.getElementById("ordersTableBody");
+  tbody.innerHTML = "";
+
+  let filtered = filterOrders();
+  let paginated = paginate(filtered);
+
+  paginated.forEach(order => {
+    tbody.innerHTML += `
+      <tr class="hover:bg-gray-50 relative">
+        <td class="py-3 px-3 font-semibold text-amber-900">#${order.orderId}</td>
+
+        <td class="px-3 flex items-center gap-3">
+          <img src="${order.avatar}" class="w-9 h-9 rounded-full">
+          ${order.customer}
+        </td>
+
+        <td class="px-3 text-gray-600">${order.date}</td>
+        <td class="px-3 text-gray-600">${order.items}</td>
+
+        <td class="px-3 font-semibold text-amber-900">$${order.total.toFixed(2)}</td>
+
+        <td class="px-3">
+          <span class="px-3 py-1 rounded-full text-xs ${order.badge}">
+            ${order.status}
+          </span>
+        </td>
+
+        <td class="px-3 relative">
+          <button class="text-gray-400 hover:text-gray-700"
+                  onclick="toggleActionMenu('${order.orderId}', event)">
+            <i class="fas fa-ellipsis-v"></i>
+          </button>
+
+          <!-- ACTION DROPDOWN -->
+          <div id="menu-${order.orderId}"
+               class="hidden absolute right-0 mt-2 w-40 bg-white shadow-lg border border-gray-200 rounded-lg z-50">
+
+            <button onclick="viewOrder('${order.orderId}')"
+              class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50">
+              <i class="fas fa-eye mr-2 text-amber-600"></i> View Order
+            </button>
+
+            <button onclick="printOrder('${order.orderId}')"
+              class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50">
+              <i class="fas fa-print mr-2 text-blue-600"></i> Print Invoice
+            </button>
+
+            <button onclick="updateStatus('${order.orderId}')"
+              class="w-full text-left px-4 py-2 text-sm hover:bg-gray-50">
+              <i class="fas fa-edit mr-2 text-green-600"></i> Update Status
+            </button>
+
+            <button onclick="deleteOrder('${order.orderId}')"
+              class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+              <i class="fas fa-trash mr-2"></i> Delete
+            </button>
+
+          </div>
+        </td>
+      </tr>
+    `;
+  });
+
+  updatePaginationDisplay(filtered.length);
+}
+
+
+// ------------------ SEARCH + FILTER ------------------
+function filterOrders() {
+  let search = document.getElementById("searchOrders")?.value.toLowerCase() || "";
+  let status = document.getElementById("filterStatus")?.value || "";
+
+  return orders.filter(order => {
+    let matchText =
+      order.orderId.toLowerCase().includes(search) ||
+      order.customer.toLowerCase().includes(search);
+
+    let matchStatus = status === "" || order.status === status;
+
+    return matchText && matchStatus;
+  });
+}
+
+
+// ------------------ SORTING ------------------
+function sortTable(column) {
+  if (currentSortColumn === column) {
+    sortDirection *= -1;
+  } else {
+    currentSortColumn = column;
+    sortDirection = 1;
+  }
+
+  orders.sort((a, b) => {
+    if (column === "total") return (a.total - b.total) * sortDirection;
+    if (column === "date") return (new Date(a.date) - new Date(b.date)) * sortDirection;
+    return a[column].localeCompare(b[column]) * sortDirection;
+  });
+
+  renderOrders();
+}
+
+
+// ------------------ PAGINATION ------------------
+function paginate(data) {
+  let start = (currentPage - 1) * rowsPerPage;
+  let end = start + rowsPerPage;
+  return data.slice(start, end);
+}
+
+function previousPage() {
+  if (currentPage > 1) {
+    currentPage--;
+    renderOrders();
+  }
+}
+
+function nextPage() {
+  let total = filterOrders().length;
+  if (currentPage < Math.ceil(total / rowsPerPage)) {
+    currentPage++;
+    renderOrders();
+  }
+}
+
+function updatePaginationDisplay(total) {
+  document.getElementById("totalOrders").textContent = total;
+
+  let start = (currentPage - 1) * rowsPerPage + 1;
+  let end = Math.min(currentPage * rowsPerPage, total);
+
+  document.getElementById("showingStart").textContent = total === 0 ? 0 : start;
+  document.getElementById("showingEnd").textContent = end;
+}
+
+
+// ------------------ ACTION MENU LOGIC ------------------
+function toggleActionMenu(id, event) {
+  event.stopPropagation();
+
+  // Close all menus
+  document.querySelectorAll("[id^='menu-']").forEach(m => m.classList.add("hidden"));
+
+  // Toggle this one
+  const menu = document.getElementById(`menu-${id}`);
+  menu.classList.toggle("hidden");
+}
+
+// Close dropdowns on outside click
+document.addEventListener("click", () => {
+  document.querySelectorAll("[id^='menu-']").forEach(m => m.classList.add("hidden"));
+});
+
+
+// ------------------ DELETE ORDER ------------------
+function deleteOrder(orderId) {
+  if (confirm(`Are you sure you want to delete order #${orderId}?`)) {
+    orders = orders.filter(o => o.orderId !== orderId);
+    renderOrders();
+    alert("Order deleted successfully.");
+  }
+}
+
+// Keeps your existing modal functions:
+function viewOrder(id){ viewOrderId.textContent = "#" + id; document.getElementById("viewModal").classList.add("active"); }
+function printOrder(id){ alert("Printing invoice for " + id); }
+function updateStatus(id){ document.getElementById("statusModal").classList.add("active"); }
+
+
+// ------------------ EVENT LISTENERS ------------------
+document.getElementById("searchOrders")?.addEventListener("input", renderOrders);
+document.getElementById("filterStatus")?.addEventListener("change", () => {
+  currentPage = 1;
+  renderOrders();
+});
+
+
+// ------------------ FIRST LOAD ------------------
+renderOrders();
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spice Haven - Report Analysis</title>
+
+  <!-- Libraries -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    .sidebar { transition: all 0.3s; }
+    .stat-card { transition: transform 0.2s, box-shadow 0.2s; }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.12); }
+    .pulse-dot { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    .gradient-border {
+      background: linear-gradient(white, white) padding-box,
+                  linear-gradient(to right, #f59e0b, #fb923c) border-box;
+      border: 2px solid transparent;
+    }
+    a.no-underline { text-decoration: none; }
+    .nav-link.active { background-color: rgba(255, 255, 255, 0.2); color: #fff; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2); }
+    /* Leaflet map rounded clipping */
+    #salesMap .leaflet-pane, #salesMap .leaflet-control-container { border-radius: 0.75rem; }
+    .custom-marker { filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2)); }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 min-h-screen">
+  <div class="flex">
+    <!-- Sidebar (matches Dashboard) -->
+    <aside class="sidebar w-64 bg-gradient-to-b from-amber-900 to-orange-900 min-h-screen p-4 shadow-2xl fixed left-0 top-0 bottom-0 z-50 text-white">
+      <!-- Logo -->
+      <div class="flex items-center justify-between mb-8">
+         <div class="flex items-center gap-2">
+          <img src="img/logo.jpeg" alt="Spice Haven Logo" class="h-8 w-8">
+          <h2 class="text-xl font-bold">Spice Haven</h2>
+        </div>
+      </div>
+      <!-- Nav -->
+      <nav class="space-y-2">
+        <a href="dashboard.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-th-large w-5 h-5"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="products.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-box w-5 h-5"></i>
+          <span>Products</span>
+        </a>
+        <a href="flash-sales.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-bolt w-5 h-5"></i>
+          <span>Flash Sales</span>
+        </a>
+        <a href="customers.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-users w-5 h-5"></i>
+          <span>Customers</span>
+        </a>
+        <a href="orders.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-shopping-cart w-5 h-5"></i>
+          <span>Orders</span>
+        </a>
+        <a href="messages.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-envelope w-5 h-5"></i>
+          <span>Messages</span>
+          <span id="message-badge" class="ml-auto bg-red-600 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
+        </a>
+        
+        <a href="report.html" class="nav-link active w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all no-underline">
+          <i class="fas fa-chart-pie w-5 h-5"></i>
+          <span>Report</span>
+        </a>
+        <a href="settings.html" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-amber-100 hover:bg-amber-800 no-underline">
+          <i class="fas fa-cog w-5 h-5"></i>
+          <span>Settings</span>
+        </a>
+      </nav>
+
+      <!-- User Profile Bottom -->
+      <div class="absolute bottom-6 left-4 right-4">
+        <div class="bg-amber-800 bg-opacity-50 rounded-xl p-4 backdrop-blur-sm">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+              A
+            </div>
+            <div class="flex-1">
+              <p class="text-sm font-semibold text-white">Admin User</p>
+              <p class="text-xs text-amber-200">Online</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="flex-1 ml-64">
+      <!-- Header -->
+      <header class="bg-white shadow-md border-b border-amber-200 sticky top-0 z-40">
+        <div class="px-8 py-4">
+          <div class="flex items-center justify-between">
+            <div>
+              <h1 class="text-2xl font-bold text-amber-900">Report Analysis</h1>
+              <p class="text-sm text-amber-700">Track your spice sales performance</p>
+            </div>
+            <div class="flex items-center gap-6">
+              <div class="flex items-center gap-2 text-sm text-gray-600">
+                <div class="w-2 h-2 bg-green-500 rounded-full pulse-dot"></div>
+                <span>Live Updates</span>
+              </div>
+              <!-- Date Range Selector -->
+              <label for="dateRange" class="sr-only">Date Range</label>
+              <select id="dateRange" class="px-3 py-2 border border-amber-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500">
+                <option>Last 7 days</option>
+                <option selected>Last 30 days</option>
+                <option>Last 90 days</option>
+                <option>This year</option>
+              </select>
+              <button class="relative">
+                <i class="fas fa-bell text-gray-600 text-xl"></i>
+                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+              </button>
+              <div class="text-right">
+                <p class="text-sm font-semibold text-amber-900" id="headerDay">—</p>
+                <p class="text-xs text-gray-600" id="headerDate">—</p>
+              </div>
+              <div class="flex items-center gap-2 cursor-pointer hover:bg-amber-50 px-3 py-2 rounded-lg transition-colors">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=f59e0b&color=fff" class="w-9 h-9 rounded-full shadow-md" alt="User" />
+                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="p-8">
+        <!-- Welcome bar -->
+        <div class="mb-8 bg-gradient-to-r from-amber-500 to-orange-500 rounded-2xl p-6 text-white shadow-xl">
+          <div class="flex items-center justify-between">
+            <div>
+              <h2 class="text-2xl font-bold mb-1">Reports Overview 📊</h2>
+              <p class="text-amber-100">Here are your performance analytics</p>
+            </div>
+            <div class="text-right">
+              <p class="text-sm text-amber-100">As of</p>
+              <p class="text-2xl font-bold" id="currentDate">—</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <!-- Total Sales -->
+          <div class="stat-card bg-white rounded-2xl shadow-lg p-6 border-2 border-amber-100">
+            <div class="flex items-center justify-between mb-4">
+              <div class="bg-gradient-to-br from-emerald-400 to-emerald-600 p-3 rounded-xl shadow-lg">
+                <i class="fas fa-dollar-sign text-white text-xl"></i>
+              </div>
+              <span class="text-green-600 text-sm font-bold flex items-center gap-1"><i class="fas fa-arrow-up"></i>14%</span>
+            </div>
+            <h3 class="text-gray-600 text-sm font-semibold mb-2">Total Sales</h3>
+            <p class="text-3xl font-bold text-amber-900 mb-1">$52,340</p>
+            <p class="text-xs text-gray-500">vs last month</p>
+          </div>
+
+          <!-- Total Orders -->
+          <div class="stat-card bg-white rounded-2xl shadow-lg p-6 border-2 border-amber-100">
+            <div class="flex items-center justify-between mb-4">
+              <div class="bg-gradient-to-br from-blue-400 to-blue-600 p-3 rounded-xl shadow-lg">
+                <i class="fas fa-shopping-bag text-white text-xl"></i>
+              </div>
+              <span class="text-red-500 text-sm font-bold flex items-center gap-1"><i class="fas fa-arrow-down"></i>8%</span>
+            </div>
+            <h3 class="text-gray-600 text-sm font-semibold mb-2">Total Orders</h3>
+            <p class="text-3xl font-bold text-amber-900 mb-1">2,847</p>
+            <p class="text-xs text-gray-500">vs last month</p>
+          </div>
+
+          <!-- Total Revenue -->
+          <div class="stat-card bg-white rounded-2xl shadow-lg p-6 border-2 border-amber-100">
+            <div class="flex items-center justify-between mb-4">
+              <div class="bg-gradient-to-br from-amber-400 to-orange-500 p-3 rounded-xl shadow-lg">
+                <i class="fas fa-chart-line text-white text-xl"></i>
+              </div>
+              <span class="text-green-600 text-sm font-bold flex items-center gap-1"><i class="fas fa-arrow-up"></i>22%</span>
+            </div>
+            <h3 class="text-gray-600 text-sm font-semibold mb-2">Total Revenue</h3>
+            <p class="text-3xl font-bold text-amber-900 mb-1">$48,290</p>
+            <p class="text-xs text-gray-500">vs last month</p>
+          </div>
+
+          <!-- Total Customers -->
+          <div class="stat-card bg-white rounded-2xl shadow-lg p-6 border-2 border-amber-100">
+            <div class="flex items-center justify-between mb-4">
+              <div class="bg-gradient-to-br from-purple-400 to-purple-600 p-3 rounded-xl shadow-lg">
+                <i class="fas fa-users text-white text-xl"></i>
+              </div>
+              <span class="text-green-600 text-sm font-bold flex items-center gap-1"><i class="fas fa-arrow-up"></i>5%</span>
+            </div>
+            <h3 class="text-gray-600 text-sm font-semibold mb-2">Total Customers</h3>
+            <p class="text-3xl font-bold text-amber-900 mb-1">8,456</p>
+            <p class="text-xs text-gray-500">vs last month</p>
+          </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          <!-- Revenue Overview -->
+          <div class="lg:col-span-2 bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between mb-6">
+              <div>
+                <h2 class="text-xl font-bold text-amber-900">Revenue Overview</h2>
+                <div class="flex items-center gap-6 text-xs mt-2">
+                  <div class="flex items-center gap-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+                    <span class="text-gray-600">Current Month</span>
+                    <span class="font-semibold text-amber-900">$48,290</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-orange-300"></div>
+                    <span class="text-gray-600">Previous Month</span>
+                    <span class="font-semibold text-amber-900">$39,540</span>
+                  </div>
+                </div>
+              </div>
+              <button class="px-3 py-1.5 text-xs gradient-border rounded-lg hover:shadow-md transition-all flex items-center gap-1.5">
+                <i class="fas fa-download text-amber-700 text-xs"></i>
+                <span class="text-amber-900 font-semibold">Export</span>
+              </button>
+            </div>
+            <div style="height: 320px;">
+              <canvas id="revenueChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Sales by Channel -->
+          <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <h2 class="text-xl font-bold text-amber-900 mb-6">Sales by Channel</h2>
+            <div class="flex items-center justify-center mb-6" style="height: 200px; position: relative;">
+              <canvas id="salesDonut"></canvas>
+              <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                <div class="text-2xl font-bold text-amber-900">2,847</div>
+                <div class="text-xs text-gray-500">Orders</div>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-sm">
+                <div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div><span class="text-gray-600">Online Store</span></div>
+                <span class="font-semibold text-amber-900">$28,340</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div><span class="text-gray-600">Wholesale</span></div>
+                <span class="font-semibold text-amber-900">$15,780</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div><span class="text-gray-600">Marketplace</span></div>
+                <span class="font-semibold text-amber-900">$5,920</span>
+              </div>
+              <div class="flex items-center justify-between text-sm">
+                <div class="flex items-center gap-2"><div class="w-2.5 h-2.5 rounded-full bg-rose-400"></div><span class="text-gray-600">Retail Store</span></div>
+                <span class="font-semibold text-amber-900">$2,300</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Row -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-4">
+          <!-- Sales By Location -->
+          <div class="lg:col-span-4 bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <h2 class="text-xl font-bold text-amber-900 mb-4">Sales By Location</h2>
+            <div id="salesMap" class="mb-5 bg-gray-50 rounded-xl overflow-hidden" style="height: 200px;"></div>
+            <div class="space-y-3">
+              <div class="flex items-center justify-between text-sm"><span class="text-gray-600">New York</span><span class="font-bold text-amber-900">72K</span></div>
+              <div class="flex items-center justify-between text-sm"><span class="text-gray-600">San Francisco</span><span class="font-bold text-amber-900">39K</span></div>
+              <div class="flex items-center justify-between text-sm"><span class="text-gray-600">Sydney</span><span class="font-bold text-amber-900">25K</span></div>
+              <div class="flex items-center justify-between text-sm"><span class="text-gray-600">Singapore</span><span class="font-bold text-amber-900">61K</span></div>
+            </div>
+          </div>
+
+          <!-- Top Selling Spices -->
+          <div class="lg:col-span-5 bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between mb-5">
+              <h2 class="text-xl font-bold text-amber-900">Top Selling Spices</h2>
+              <div class="flex gap-2">
+                <button class="px-3 py-1.5 text-xs border border-amber-200 rounded-lg hover:bg-amber-50 transition-colors flex items-center gap-1.5">
+                  <i class="fas fa-filter text-xs text-amber-700"></i>
+                  <span class="text-amber-900 font-semibold">Filter</span>
+                </button>
+                <button class="px-3 py-1.5 text-xs bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg hover:brightness-110 transition-colors">See All</button>
+              </div>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead>
+                  <tr class="border-b border-amber-100">
+                    <th class="text-left py-3 px-3 text-xs font-semibold text-amber-900"><input type="checkbox" class="rounded border-amber-300" aria-label="Select all rows" /></th>
+                    <th class="text-left py-3 px-3 text-xs font-semibold text-amber-900">Product Name</th>
+                    <th class="text-left py-3 px-3 text-xs font-semibold text-amber-900">Price</th>
+                    <th class="text-left py-3 px-3 text-xs font-semibold text-amber-900">Category</th>
+                    <th class="text-left py-3 px-3 text-xs font-semibold text-amber-900">Sold</th>
+                    <th class="text-left py-3 px-3 text-xs font-semibold text-amber-900">Revenue</th>
+                    <th class="text-left py-3 px-3 text-xs font-semibold text-amber-900">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="productTable">
+                  <tr class="border-b border-amber-50 hover:bg-amber-50/40">
+                    <td class="py-3 px-3"><input type="checkbox" class="rounded border-amber-300" aria-label="Select Red Chili Powder row" /></td>
+                    <td class="py-3 px-3 text-amber-900 flex items-center gap-2"><span class="text-lg">🌶️</span><span>Red Chili Powder</span></td>
+                    <td class="py-3 px-3 text-gray-700">$12.99</td>
+                    <td class="py-3 px-3 text-gray-700">Ground Spices</td>
+                    <td class="py-3 px-3 text-gray-700">342</td>
+                    <td class="py-3 px-3 text-amber-900 font-semibold">$4,442.58</td>
+                    <td class="py-3 px-3"><button class="text-amber-600 hover:text-amber-800" aria-label="More actions for Red Chili Powder"><i class="fas fa-ellipsis-v"></i></button></td>
+                  </tr>
+                  <tr class="border-b border-amber-50 hover:bg-amber-50/40">
+                    <td class="py-3 px-3"><input type="checkbox" class="rounded border-amber-300" aria-label="Select Turmeric Powder row" /></td>
+                    <td class="py-3 px-3 text-amber-900 flex items-center gap-2"><span class="text-lg">💛</span><span>Turmeric Powder</span></td>
+                    <td class="py-3 px-3 text-gray-700">$15.49</td>
+                    <td class="py-3 px-3 text-gray-700">Ground Spices</td>
+                    <td class="py-3 px-3 text-gray-700">298</td>
+                    <td class="py-3 px-3 text-amber-900 font-semibold">$4,616.02</td>
+                    <td class="py-3 px-3"><button class="text-amber-600 hover:text-amber-800" aria-label="More actions for Turmeric Powder"><i class="fas fa-ellipsis-v"></i></button></td>
+                  </tr>
+                  <tr class="border-b border-amber-50 hover:bg-amber-50/40">
+                    <td class="py-3 px-3"><input type="checkbox" class="rounded border-amber-300" aria-label="Select Black Pepper row" /></td>
+                    <td class="py-3 px-3 text-amber-900 flex items-center gap-2"><span class="text-lg">⚫</span><span>Black Pepper</span></td>
+                    <td class="py-3 px-3 text-gray-700">$18.99</td>
+                    <td class="py-3 px-3 text-gray-700">Whole Spices</td>
+                    <td class="py-3 px-3 text-gray-700">267</td>
+                    <td class="py-3 px-3 text-amber-900 font-semibold">$5,070.33</td>
+                    <td class="py-3 px-3"><button class="text-amber-600 hover:text-amber-800" aria-label="More actions for Black Pepper"><i class="fas fa-ellipsis-v"></i></button></td>
+                  </tr>
+                  <tr class="border-b border-amber-50 hover:bg-amber-50/40">
+                    <td class="py-3 px-3"><input type="checkbox" class="rounded border-amber-300" aria-label="Select Cinnamon Sticks row" /></td>
+                    <td class="py-3 px-3 text-amber-900 flex items-center gap-2"><span class="text-lg">🤎</span><span>Cinnamon Sticks</span></td>
+                    <td class="py-3 px-3 text-gray-700">$22.50</td>
+                    <td class="py-3 px-3 text-gray-700">Whole Spices</td>
+                    <td class="py-3 px-3 text-gray-700">189</td>
+                    <td class="py-3 px-3 text-amber-900 font-semibold">$4,252.50</td>
+                    <td class="py-3 px-3"><button class="text-amber-600 hover:text-amber-800" aria-label="More actions for Cinnamon Sticks"><i class="fas fa-ellipsis-v"></i></button></td>
+                  </tr>
+                  <tr class="border-b border-amber-50 hover:bg-amber-50/40">
+                    <td class="py-3 px-3"><input type="checkbox" class="rounded border-amber-300" aria-label="Select Cardamom Pods row" /></td>
+                    <td class="py-3 px-3 text-amber-900 flex items-center gap-2"><span class="text-lg">🟢</span><span>Cardamom Pods</span></td>
+                    <td class="py-3 px-3 text-gray-700">$28.99</td>
+                    <td class="py-3 px-3 text-gray-700">Premium Spices</td>
+                    <td class="py-3 px-3 text-gray-700">156</td>
+                    <td class="py-3 px-3 text-amber-900 font-semibold">$4,522.44</td>
+                    <td class="py-3 px-3"><button class="text-amber-600 hover:text-amber-800" aria-label="More actions for Cardamom Pods"><i class="fas fa-ellipsis-v"></i></button></td>
+                  </tr>
+                  <tr class="hover:bg-amber-50/40">
+                    <td class="py-3 px-3"><input type="checkbox" class="rounded border-amber-300" aria-label="Select Cumin Seeds row" /></td>
+                    <td class="py-3 px-3 text-amber-900 flex items-center gap-2"><span class="text-lg">🟡</span><span>Cumin Seeds</span></td>
+                    <td class="py-3 px-3 text-gray-700">$11.49</td>
+                    <td class="py-3 px-3 text-gray-700">Whole Spices</td>
+                    <td class="py-3 px-3 text-gray-700">234</td>
+                    <td class="py-3 px-3 text-amber-900 font-semibold">$2,688.66</td>
+                    <td class="py-3 px-3"><button class="text-amber-600 hover:text-amber-800" aria-label="More actions for Cumin Seeds"><i class="fas fa-ellipsis-v"></i></button></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Monthly Target -->
+          <div class="lg:col-span-3 bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-bold text-amber-900">Monthly Target</h2>
+              <button class="text-amber-600 hover:text-amber-800" aria-label="More options for Monthly Target"><i class="fas fa-ellipsis-v"></i></button>
+            </div>
+            <p class="text-xs text-gray-500 mb-6">Sales target for this month</p>
+            <!-- Circular Progress -->
+            <div class="flex items-center justify-center mb-6">
+              <div class="relative" style="width: 180px; height: 180px;">
+                <svg viewBox="0 0 180 180" class="transform -rotate-90">
+                  <circle cx="90" cy="90" r="70" fill="none" stroke="#f3f4f6" stroke-width="12" />
+                  <circle cx="90" cy="90" r="70" fill="none" stroke="url(#gradient)" stroke-width="12" stroke-linecap="round" stroke-dasharray="440" stroke-dashoffset="88" style="transition: stroke-dashoffset 0.5s ease;" />
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:1" />
+                      <stop offset="100%" style="stop-color:#fb923c;stop-opacity:1" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                  <div class="text-3xl font-bold text-amber-900">80.5%</div>
+                  <div class="text-xs text-green-600 font-medium">+18%</div>
+                </div>
+              </div>
+            </div>
+            <p class="text-xs text-center text-gray-500 mb-6">You earned <span class="font-semibold text-amber-900">$48,290</span> this month, exceeding last month's performance!</p>
+            <div class="grid grid-cols-3 gap-4">
+              <div class="text-center">
+                <div class="text-xs text-gray-500 mb-1">Target</div>
+                <div class="text-sm font-semibold text-amber-900 flex items-center justify-center gap-1">$60k <i class="fas fa-arrow-up text-xs text-green-500"></i></div>
+              </div>
+              <div class="text-center">
+                <div class="text-xs text-gray-500 mb-1">Revenue</div>
+                <div class="text-sm font-semibold text-amber-900 flex items-center justify-center gap-1">$48k <i class="fas fa-arrow-up text-xs text-green-500"></i></div>
+              </div>
+              <div class="text-center">
+                <div class="text-xs text-gray-500 mb-1">Today</div>
+                <div class="text-sm font-semibold text-amber-900 flex items-center justify-center gap-1">$2.1k <i class="fas fa-arrow-up text-xs text-green-500"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions (optional, keeping parity with Dashboard style) -->
+        <div class="bg-white rounded-2xl shadow-lg p-6 border border-amber-100">
+          <h2 class="text-xl font-bold text-amber-900 mb-6">Quick Actions</h2>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button class="gradient-border rounded-xl p-6 text-center hover:shadow-xl transition-all group">
+              <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <i class="fas fa-file-export text-white text-2xl"></i>
+              </div>
+              <p class="font-bold text-amber-900 text-sm">Export Report</p>
+            </button>
+            <button class="gradient-border rounded-xl p-6 text-center hover:shadow-xl transition-all group">
+              <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <i class="fas fa-filter text-white text-2xl"></i>
+              </div>
+              <p class="font-bold text-amber-900 text-sm">Advanced Filters</p>
+            </button>
+            <button class="gradient-border rounded-xl p-6 text-center hover:shadow-xl transition-all group">
+              <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <i class="fas fa-sitemap text-white text-2xl"></i>
+              </div>
+              <p class="font-bold text-amber-900 text-sm">Channel Split</p>
+            </button>
+            <button class="gradient-border rounded-xl p-6 text-center hover:shadow-xl transition-all group">
+              <div class="w-16 h-16 mx-auto mb-3 bg-gradient-to-br from-purple-400 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <i class="fas fa-user-friends text-white text-2xl"></i>
+              </div>
+              <p class="font-bold text-amber-900 text-sm">Customer Cohorts</p>
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    // Dates
+    const headerDayEl = document.getElementById('headerDay');
+    const headerDateEl = document.getElementById('headerDate');
+    const currentDateEl = document.getElementById('currentDate');
+    const now = new Date();
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    headerDayEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long' });
+    headerDateEl.textContent = now.toLocaleDateString('en-US', options);
+    currentDateEl.textContent = now.toLocaleDateString('en-US', options);
+
+    // Revenue Line Chart (theme colors)
+    const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(revenueCtx, {
+      type: 'line',
+      data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [
+          {
+            label: 'Revenue',
+            data: [8500, 12300, 15200, 12290],
+            borderColor: '#f59e0b',
+            backgroundColor: 'rgba(245, 158, 11, 0.12)',
+            tension: 0.4,
+            fill: true,
+            borderWidth: 3,
+            pointRadius: 5,
+            pointBackgroundColor: '#f59e0b',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointHoverRadius: 7
+          },
+          {
+            label: 'Orders',
+            data: [320, 450, 390, 520],
+            borderColor: '#fb923c',
+            backgroundColor: 'rgba(251, 146, 60, 0.12)',
+            tension: 0.4,
+            fill: true,
+            borderWidth: 3,
+            pointRadius: 5,
+            pointBackgroundColor: '#fb923c',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointHoverRadius: 7
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: { usePointStyle: true, padding: 16, font: { size: 12, weight: 'bold' }, color: '#78350f' }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#78350f',
+            bodyColor: '#78350f',
+            borderColor: '#f59e0b',
+            borderWidth: 2,
+            padding: 12,
+            displayColors: true,
+            callbacks: {
+              label: function(ctx) {
+                const ds = ctx.dataset.label;
+                const v = ctx.parsed.y;
+                if (ds === 'Revenue') return ds + ': $' + v.toLocaleString();
+                return ds + ': ' + v.toLocaleString();
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#9ca3af', font: { size: 11 } } },
+          y: {
+            beginAtZero: true,
+            grid: { color: '#f3f4f6' },
+            ticks: {
+              color: '#9ca3af',
+              font: { size: 11 },
+              callback: function(v) { return '$' + v.toLocaleString(); }
+            }
+          }
+        }
+      }
+    });
+
+    // Sales Donut
+    const donutCtx = document.getElementById('salesDonut').getContext('2d');
+    new Chart(donutCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['Online Store', 'Wholesale', 'Marketplace', 'Retail Store'],
+        datasets: [{
+          data: [28340, 15780, 5920, 2300],
+          backgroundColor: ['#f59e0b', '#10b981', '#3b82f6', '#f472b6'],
+          borderWidth: 0,
+          spacing: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#1f2937',
+            bodyColor: '#6b7280',
+            borderColor: '#f59e0b',
+            borderWidth: 1,
+            padding: 10,
+            displayColors: true,
+            callbacks: { label: (ctx) => ctx.label + ': $' + ctx.parsed.toLocaleString() }
+          }
+        },
+        cutout: '72%'
+      }
+    });
+
+    // Leaflet Map
+    const salesMap = L.map('salesMap', { zoomControl: false, attributionControl: false }).setView([20, 0], 2);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(salesMap);
+
+    const locations = [
+      { name: 'New York', lat: 40.7128, lng: -74.0060, sales: 72000 },
+      { name: 'San Francisco', lat: 37.7749, lng: -122.4194, sales: 39000 },
+      { name: 'Sydney', lat: -33.8688, lng: 151.2093, sales: 25000 },
+      { name: 'Singapore', lat: 1.3521, lng: 103.8198, sales: 61000 },
+    ];
+
+    locations.forEach((loc) => {
+      const marker = L.marker([loc.lat, loc.lng], {
+        icon: L.divIcon({
+          className: 'custom-marker',
+          html: `<div style="background: linear-gradient(135deg,#f59e0b,#fb923c); border: 2px solid #d97706; border-radius: 9999px; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 10px;">$${Math.round(loc.sales / 1000)}k</div>`,
+          iconSize: [26, 26],
+          iconAnchor: [13, 13],
+        }),
+      }).addTo(salesMap);
+
+      marker.bindPopup(`<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+        <b style="color:#1f2937;">${loc.name}</b><br/>
+        <span style="color:#6b7280;">Sales: <strong style="color:#f59e0b;">$${loc.sales.toLocaleString()}</strong></span>
+      </div>`);
+
+      marker.bindTooltip(`<b>${loc.name}</b><br/>$${loc.sales.toLocaleString()}`, { permanent: false, direction: 'top', offset: [0, -10] });
+    });
+  </script>
+</body>
+</html>
